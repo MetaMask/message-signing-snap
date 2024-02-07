@@ -22,9 +22,9 @@ const publicKey: string = await ethereum.request({
     snapId: 'npm:@metamask/message-signing-snap',
     request: {
       method: 'getPublicKey',
-    }
-  }
-})
+    },
+  },
+});
 ```
 
 ### signMessage
@@ -56,11 +56,11 @@ const signature: string = await ethereum.request({
     request: {
       method: 'signMessage',
       params: {
-        message: 'metamask:my message to sign'
-      }
-    }
-  }
-})
+        message: 'metamask:my message to sign',
+      },
+    },
+  },
+});
 ```
 
 Example how to verify signature:

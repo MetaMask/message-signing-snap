@@ -1,0 +1,28 @@
+{
+  "version": "0.1.0",
+  "description": "An example Snap written in TypeScript.",
+  "proposedName": "TypeScript Example",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MetaMask/message-signing-snap.git"
+  },
+  "source": {
+    "shasum": "NcsJOHW+cpRlveo18BSL3boQfey8aepxFy7Sek46Bto=",
+    "location": {
+      "npm": {
+        "filePath": "dist/bundle.js",
+        "iconPath": "images/icon.svg",
+        "packageName": "@metamask/message-signing-snap",
+        "registry": "https://registry.npmjs.org/"
+      }
+    }
+  },
+  "initialPermissions": {
+    "snap_getEntropy": {},
+    "endowment:rpc": {
+      "dapps": true,
+      "snaps": false
+    }
+  },
+  "manifestVersion": "0.1"
+}

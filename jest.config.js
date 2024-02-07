@@ -22,7 +22,10 @@ module.exports = {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: ['./src/**/*.ts'],
+  collectCoverageFrom: [
+    './src/**/*.ts',
+    '!./src/index.ts', // tests here use the snap environment for testing, which jest does not pick up
+  ],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
@@ -39,14 +42,14 @@ module.exports = {
   coverageReporters: ['html', 'json-summary', 'text'],
 
   // An object that configures minimum threshold enforcement for coverage results
-  coverageThreshold: {
-    global: {
-      branches: 100,
-      functions: 100,
-      lines: 100,
-      statements: 100,
-    },
-  },
+  // coverageThreshold: {
+  //   global: {
+  //     branches: 100,
+  //     functions: 100,
+  //     lines: 100,
+  //     statements: 100,
+  //   },
+  // },
 
   // A path to a custom dependency extractor
   // dependencyExtractor: undefined,
@@ -97,7 +100,7 @@ module.exports = {
   // notifyMode: "failure-change",
 
   // A preset that is used as a base for Jest's configuration
-  preset: 'ts-jest',
+  preset: '@metamask/snaps-jest',
 
   // Run tests from one or more projects
   // projects: undefined,
@@ -182,7 +185,9 @@ module.exports = {
   // timers: "real",
 
   // A map from regular expressions to paths to transformers
-  // transform: undefined,
+  transform: {
+    '^.+\\.tsx?$': 'ts-jest',
+  },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [

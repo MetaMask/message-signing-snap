@@ -22,12 +22,12 @@ const publicKey: string = await ethereum.request({
   method: 'wallet_invokeSnap',
   params: {
     // or local:http://localhost:8080 if running snap locally
-    snapId: 'npm:@metamask/message-signing-snap', 
+    snapId: 'npm:@metamask/message-signing-snap',
     request: {
       method: 'getPublicKey',
-    }
-  }
-})
+    },
+  },
+});
 
 // Example: Sign a message
 const signature: string = await ethereum.request({
@@ -38,11 +38,11 @@ const signature: string = await ethereum.request({
     request: {
       method: 'signMessage',
       params: {
-        message: 'metamask:my message to sign'
-      }
-    }
-  }
-})
+        message: 'metamask:my message to sign',
+      },
+    },
+  },
+});
 ```
 
 ## API

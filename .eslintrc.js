@@ -7,6 +7,10 @@ module.exports = {
     {
       files: ['*.ts'],
       extends: ['@metamask/eslint-config-typescript'],
+      rules: {
+        'jsdoc/no-types': 'off',
+        'id-length': 'off',
+      },
     },
 
     {
@@ -23,6 +27,10 @@ module.exports = {
         '@metamask/eslint-config-jest',
         '@metamask/eslint-config-nodejs',
       ],
+      rules: {
+        'jsdoc/require-jsdoc': 'off',
+        'id-length': 'off',
+      },
     },
   ],
 
