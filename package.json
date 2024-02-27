@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@metamask/rpc-errors": "^6.1.0",
-    "@metamask/snaps-jest": "^5.0.0",
+    "@metamask/snaps-jest": "^6.0.0",
     "@metamask/snaps-sdk": "^2.0.0",
     "@metamask/utils": "^8.3.0",
     "@noble/ciphers": "^0.4.1",
