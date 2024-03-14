@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0]
 
-### Misc - Update Package Versions and Add Code Scanning.
+### Added
 
 - Enabling MetaMask security code scanner ([#15](https://github.com/MetaMask/message-signing-snap/pull/15))
 - refactor: update packages ([#25](https://github.com/MetaMask/message-signing-snap/pull/25))
