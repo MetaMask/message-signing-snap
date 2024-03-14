@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0]
+
+### Added
+
+- Enabling MetaMask security code scanner ([#15](https://github.com/MetaMask/message-signing-snap/pull/15))
+- refactor: update packages ([#25](https://github.com/MetaMask/message-signing-snap/pull/25))
+
 ## [0.2.0]
 
 ### Added
@@ -15,5 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/MetaMask/message-signing-snap/releases/tag/v0.2.0
