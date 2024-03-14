@@ -10,7 +10,6 @@ const SignMessageParamsSchema = z.object({
 
 /**
  * Asserts the shape of the `signMessage` request.
- *
  * @param params - Any method params to assert.
  * @returns {never} Returns nothing, but will throw error if params don't match what is required.
  */

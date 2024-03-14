@@ -10,6 +10,7 @@ module.exports = {
       rules: {
         'jsdoc/no-types': 'off',
         'id-length': 'off',
+        '@typescript-eslint/no-parameter-properties': 'off',
       },
     },
 
