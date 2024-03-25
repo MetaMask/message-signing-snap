@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1]
+
+### Uncategorized
+
+- build: add additional exports from package.json ([#37](https://github.com/MetaMask/message-signing-snap/pull/37))
+- Add audit report ([#27](https://github.com/MetaMask/message-signing-snap/pull/27))
+
 ## [0.3.0]
 
 ### Added
@@ -22,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/MetaMask/message-signing-snap/releases/tag/v0.2.0
