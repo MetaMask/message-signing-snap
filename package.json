@@ -17,7 +17,10 @@
       "require": "./dist/index.js",
       "types": "./dist/types/index.d.ts"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./snap.manifest.json": "./snap.manifest.json",
+    "./images/icon.svg": "./images/icon.svg",
+    "./dist/bundle.js": "./dist/bundle.js"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
