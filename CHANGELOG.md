@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.1]
 
-### Uncategorized
+### Added
 
 - build: add additional exports from package.json ([#37](https://github.com/MetaMask/message-signing-snap/pull/37))
-- Add audit report ([#27](https://github.com/MetaMask/message-signing-snap/pull/27))
+- docs: Add audit report ([#27](https://github.com/MetaMask/message-signing-snap/pull/27))
 
 ## [0.3.0]
 
