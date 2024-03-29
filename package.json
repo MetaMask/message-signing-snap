@@ -20,7 +20,12 @@
     "./package.json": "./package.json",
     "./snap.manifest.json": "./snap.manifest.json",
     "./images/icon.svg": "./images/icon.svg",
-    "./dist/bundle.js": "./dist/bundle.js"
+    "./dist/bundle.js": "./dist/bundle.js",
+    "./dist/bundle.json": {
+      "import": "./dist/bundle.json",
+      "require": "./dist/bundle.json",
+      "types": "./dist/types/bundle.json.d.ts"
+    }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -31,8 +36,9 @@
     "snap.manifest.json"
   ],
   "scripts": {
-    "build": "mm-snap build",
+    "build": "mm-snap build && yarn bundle-all",
     "build:clean": "yarn clean && yarn build",
+    "bundle-all": "node scripts/bundle-all.js",
     "clean": "rimraf dist",
     "lint": "yarn lint:eslint && yarn lint:constraints && yarn lint:misc --check && yarn lint:changelog",
     "lint:changelog": "auto-changelog validate --prettier",
