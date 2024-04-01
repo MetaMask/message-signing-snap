@@ -1,5 +1,6 @@
-declare module "bundle.json" {
-  interface Bundle {
+/* eslint-disable */
+declare module 'bundle.json' {
+  type Bundle = {
     bundle: string;
     icon: string;
     manifest: {
@@ -17,20 +18,20 @@ declare module "bundle.json" {
             filePath: string;
             iconPath: string;
             packageName: string;
-            registry: "https://registry.npmjs.org/";
+            registry: 'https://registry.npmjs.org/';
           };
         };
       };
       initialPermissions: {
         snap_getEntropy: {};
-        "endowment:rpc": {
+        'endowment:rpc': {
           dapps: boolean;
           snaps: boolean;
         };
       };
       manifestVersion: string;
     };
-  }
+  };
 
   const bundle: Bundle;
   export default bundle;

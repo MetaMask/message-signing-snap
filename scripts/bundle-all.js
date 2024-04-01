@@ -1,13 +1,19 @@
+/* eslint-disable n/no-sync, jsdoc/match-description */
+
 const { readFileSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 
-// Function to read file contents and return as a string
+/**
+ * Read the contents of a file and return as a string.
+ * @param {string} filePath - The path to the file
+ * @returns {string} The file as a string
+ */
 function readFileContents(filePath) {
   try {
     return readFileSync(filePath, 'utf8');
-  } catch (err) {
-    console.error(`Error reading file from disk: ${filePath}`, err);
-    throw err;
+  } catch (error) {
+    console.error(`Error reading file from disk: ${filePath}`, error);
+    throw error;
   }
 }
 
@@ -27,7 +33,7 @@ const types = readFileContents(typesPath);
 const combined = {
   bundle,
   icon,
-  manifest
+  manifest,
 };
 
 // Path for the output JSON file
@@ -40,7 +46,7 @@ try {
   writeFileSync(outputPath, JSON.stringify(combined, null, 0));
   writeFileSync(outputPathTypes, types);
   console.log(`Combined file created successfully at ${outputPath}`);
-} catch (err) {
-  console.error('Error writing combined file to disk:', err);
-  throw err;
+} catch (error) {
+  console.error('Error writing combined file to disk:', error);
+  throw error;
 }
