@@ -21,7 +21,10 @@
     "./snap.manifest.json": "./snap.manifest.json",
     "./images/icon.svg": "./images/icon.svg",
     "./dist/bundle.js": "./dist/bundle.js",
-    "./dist/preinstalled-snap.json": "./dist/preinstalled-snap.json"
+    "./dist/preinstalled-snap.json": {
+      "import": "./dist/preinstalled-snap.json",
+      "types": "./dist/preinstalled-snap.d.ts"
+    }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
