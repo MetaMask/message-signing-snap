@@ -12,6 +12,11 @@
   },
   "sideEffects": false,
   "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
     "./package.json": "./package.json",
     "./snap.manifest.json": "./snap.manifest.json",
     "./images/icon.svg": "./images/icon.svg",
