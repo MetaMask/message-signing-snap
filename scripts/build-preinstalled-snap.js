@@ -51,7 +51,7 @@ const preinstalledSnap = {
       value: icon,
     },
     {
-      path: 'dist/bundle.svg',
+      path: 'dist/bundle.js',
       value: bundle,
     },
   ],
