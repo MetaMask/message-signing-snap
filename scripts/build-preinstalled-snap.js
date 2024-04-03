@@ -33,12 +33,12 @@ const icon = readFileContents(iconPath);
 const manifest = readFileContents(manifestPath);
 
 const snapId =
-  /** @type {import('./build-preinstalled.snap').PreinstalledSnap['snapId']} */ (
+  /** @type {import('@metamask/snaps-controllers').PreinstalledSnap['snapId']} */ (
     `npm:${packageFile.name}`
   );
 
 /**
- * @type {import('./build-preinstalled.snap').PreinstalledSnap}
+ * @type {import('@metamask/snaps-controllers').PreinstalledSnap}
  */
 const preinstalledSnap = {
   snapId,
@@ -49,7 +49,7 @@ const preinstalledSnap = {
       value: icon,
     },
     {
-      path: 'dist/bundle.svg',
+      path: 'dist/bundle.js',
       value: bundle,
     },
   ],
@@ -58,8 +58,10 @@ const preinstalledSnap = {
 
 // Write preinstalled-snap file
 try {
+  // Preinstalled Snap File
   const outputPath = join(__dirname, '..', 'dist/preinstalled-snap.json');
   writeFileSync(outputPath, JSON.stringify(preinstalledSnap, null, 0));
+
   console.log(
     `[preinstalled-snap] - successfully created preinstalled snap at ${outputPath}`,
   );
