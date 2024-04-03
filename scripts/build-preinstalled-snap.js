@@ -26,13 +26,11 @@ function readFileContents(filePath) {
 const bundlePath = require.resolve('../dist/bundle.js');
 const iconPath = require.resolve('../images/icon.svg');
 const manifestPath = require.resolve('../snap.manifest.json');
-const typesPath = require.resolve('../types/preinstalled-snap.d.ts');
 
 // File Contents
 const bundle = readFileContents(bundlePath);
 const icon = readFileContents(iconPath);
 const manifest = readFileContents(manifestPath);
-const types = readFileContents(typesPath);
 
 const snapId =
   /** @type {import('@metamask/snaps-controllers').PreinstalledSnap['snapId']} */ (
@@ -60,13 +58,9 @@ const preinstalledSnap = {
 
 // Write preinstalled-snap file
 try {
-  // Preinstall Snap File
+  // Preinstalled Snap File
   const outputPath = join(__dirname, '..', 'dist/preinstalled-snap.json');
   writeFileSync(outputPath, JSON.stringify(preinstalledSnap, null, 0));
-
-  // Preinstall Snap Types File
-  const outputPathTypes = join(__dirname, '..', 'dist/preinstalled-snap.d.ts');
-  writeFileSync(outputPathTypes, types);
 
   console.log(
     `[preinstalled-snap] - successfully created preinstalled snap at ${outputPath}`,
