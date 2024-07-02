@@ -60,7 +60,7 @@ await provider.request({
 You can invoke this method once the snap is connected
 
 ```js
-await provider?.request({
+await provider.request({
   method: 'wallet_invokeSnap',
   params: {
     snapId: 'npm:@metamask/message-signing-snap',
