@@ -12,7 +12,7 @@ or
 
 ## Usage
 
-See the [RPC API](./RPC.md) for more information on how to interact with the snap.
+See the [RPC API](./docs/RPC.md) for more information on how to interact with the snap.
 
 Examples:
 
@@ -49,7 +49,13 @@ const signature: string = await ethereum.request({
 
 See our documentation:
 
-- [RPC API](./RPC.md) for more information on how to interact with the snap.
+- [RPC API](./docs/RPC.md) for more information on how to interact with the snap.
+
+## Testing
+
+See our documentation
+
+- [Testing Docs](./docs/testing.md) on how to call this pre-installed snap.
 
 ## Contributing
 
