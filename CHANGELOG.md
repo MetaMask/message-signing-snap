@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0]
+
+### Uncategorized
+
+- feat: added portfolio automatic connection ([#82](https://github.com/MetaMask/message-signing-snap/pull/82))
+- build: upgrade packages ([#81](https://github.com/MetaMask/message-signing-snap/pull/81))
+- docs: add testing documentation for pre-installed snaps ([#80](https://github.com/MetaMask/message-signing-snap/pull/80))
+
 ## [0.3.3]
 
 ### Added
@@ -41,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.3...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.0...v0.3.1
