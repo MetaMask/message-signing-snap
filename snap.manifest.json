@@ -24,5 +24,9 @@
       "snaps": false
     }
   },
+  "initialConnections": {
+    "https://portfolio.metamask.io": {},
+    "https://portfolio-builds.metafi-dev.codefi.network": {}
+  },
   "manifestVersion": "0.1"
 }
