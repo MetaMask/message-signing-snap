@@ -1,5 +1,5 @@
 {
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Automatic message signing of MetaMask tagged messages",
   "proposedName": "MetaMask Message Signing Snap",
   "repository": {
