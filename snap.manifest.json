@@ -7,7 +7,7 @@
     "url": "https://github.com/MetaMask/message-signing-snap.git"
   },
   "source": {
-    "shasum": "GZC9aXHza1pht62a/9w2vdACWKeugILWULGR3lYg3gg=",
+    "shasum": "9nCxxsfKMQ978vz5JK8xT8A7LH4mApsWWCkuN5beSNY=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
