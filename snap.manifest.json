@@ -1,5 +1,5 @@
 {
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Automatic message signing of MetaMask tagged messages",
   "proposedName": "MetaMask Message Signing Snap",
   "repository": {
@@ -7,7 +7,7 @@
     "url": "https://github.com/MetaMask/message-signing-snap.git"
   },
   "source": {
-    "shasum": "DI8Zm6Anw0nq7OIO0P7/8fGvAO7f1McAp/xPx4YN1l0=",
+    "shasum": "LAgptN++khoaukUy3XKLBOO+KSU41rPiLsLFk1Uwuws=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
