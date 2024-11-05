@@ -10,6 +10,7 @@
     "type": "git",
     "url": "https://github.com/MetaMask/message-signing-snap.git"
   },
+  "license": "SEE LICENSE IN LICENSE",
   "sideEffects": false,
   "exports": {
     ".": {
