@@ -1,13 +1,13 @@
 {
   "version": "0.4.0",
-  "description": "Automatic message signing of MetaMask tagged messages",
-  "proposedName": "MetaMask Message Signing Snap",
+  "description": "Provides public key and message signing used for signing in with MetaMask",
+  "proposedName": "Sign in with MetaMask",
   "repository": {
     "type": "git",
     "url": "https://github.com/MetaMask/message-signing-snap.git"
   },
   "source": {
-    "shasum": "sqxMatn368VE1Yjv/Zk78FYtCbj3EYbudF3oNT9+Kp4=",
+    "shasum": "rDfua/2C03WRBFj8S/pXbg4elg57/GwrHhHQmUCka8o=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -19,7 +19,9 @@
   },
   "initialConnections": {
     "https://portfolio.metamask.io": {},
-    "https://portfolio-builds.metafi-dev.codefi.network": {}
+    "https://portfolio-builds.metafi-dev.codefi.network": {},
+    "https://docs.metamask.io": {},
+    "https://developer.metamask.io": {}
   },
   "initialPermissions": {
     "snap_getEntropy": {},
