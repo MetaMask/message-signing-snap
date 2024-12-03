@@ -69,7 +69,6 @@
     "@metamask/eslint-config-typescript": "^12.1.0",
     "@metamask/snaps-cli": "^6.2.1",
     "@metamask/snaps-controllers": "^9.2.0",
-    "@metamask/snaps-execution-environments": "^6.7.2",
     "@metamask/snaps-jest": "^8.2.0",
     "@metamask/snaps-sdk": "^6.0.0",
     "@types/jest": "^29.5.12",

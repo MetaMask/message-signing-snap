@@ -2096,7 +2096,6 @@ __metadata:
     "@metamask/rpc-errors": ^6.3.0
     "@metamask/snaps-cli": ^6.2.1
     "@metamask/snaps-controllers": ^9.2.0
-    "@metamask/snaps-execution-environments": ^6.7.2
     "@metamask/snaps-jest": ^8.2.0
     "@metamask/snaps-sdk": ^6.0.0
     "@metamask/utils": ^9.0.0
@@ -2354,7 +2353,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/snaps-execution-environments@npm:^6.10.0, @metamask/snaps-execution-environments@npm:^6.7.2":
+"@metamask/snaps-execution-environments@npm:^6.10.0":
   version: 6.10.0
   resolution: "@metamask/snaps-execution-environments@npm:6.10.0"
   dependencies:
