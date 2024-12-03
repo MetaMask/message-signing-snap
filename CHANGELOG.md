@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0]
+
+### Changed
+
+- refactor: move all `dependencies` to `devDependencies` ([#88](https://github.com/MetaMask/message-signing-snap/pull/88))
+  - Since this is a preinstalled Snap, anything added to dependencies will end up in the client (extension and mobile) dependency-tree. Since Snaps bundle all of the dependencies required at runtime into one bundle.js file, these dependencies aren't used at runtime. Thus, we might as well reduce the size of the dependency-tree by moving the dependencies to be devDeps. This will ultimately help with the client node_modules sizing and dependency management
+
 ## [0.5.0]
 
 ### Added
@@ -57,7 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.2...v0.3.3
