@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.0]
 
-### Uncategorized
+### Added
 
 - feat: update name and add more initial connections ([#86](https://github.com/MetaMask/message-signing-snap/pull/86))
 - docs: add license ([#84](https://github.com/MetaMask/message-signing-snap/pull/84))
