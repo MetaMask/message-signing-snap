@@ -51,15 +51,6 @@
     "test:watch": "yarn build && jest --watch",
     "tscheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@metamask/rpc-errors": "^6.3.0",
-    "@metamask/snaps-sdk": "^6.0.0",
-    "@metamask/utils": "^9.0.0",
-    "@noble/ciphers": "^0.5.3",
-    "@noble/curves": "^1.4.2",
-    "@noble/hashes": "^1.4.0",
-    "zod": "^3.23.8"
-  },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^3.0.4",
     "@lavamoat/preinstall-always-fail": "^2.0.0",
@@ -68,10 +59,15 @@
     "@metamask/eslint-config-jest": "^12.1.0",
     "@metamask/eslint-config-nodejs": "^12.1.0",
     "@metamask/eslint-config-typescript": "^12.1.0",
+    "@metamask/rpc-errors": "^6.3.0",
     "@metamask/snaps-cli": "^6.2.1",
     "@metamask/snaps-controllers": "^9.2.0",
-    "@metamask/snaps-execution-environments": "^6.7.2",
     "@metamask/snaps-jest": "^8.2.0",
+    "@metamask/snaps-sdk": "^6.0.0",
+    "@metamask/utils": "^9.0.0",
+    "@noble/ciphers": "^0.5.3",
+    "@noble/curves": "^1.4.2",
+    "@noble/hashes": "^1.4.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.9",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
@@ -91,7 +87,8 @@
     "rimraf": "^5.0.7",
     "ts-jest": "^29.1.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "zod": "^3.23.8"
   },
   "packageManager": "yarn@3.2.1",
   "engines": {
