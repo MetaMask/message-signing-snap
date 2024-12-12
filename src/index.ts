@@ -3,7 +3,9 @@ import type { OnRpcRequestHandler } from '@metamask/snaps-sdk';
 import { z } from 'zod';
 
 import {
+  decryptMessage,
   getAllPublicEntropyKeys,
+  getEncryptionPublicKey,
   getPublicEntropyKey,
   signMessageWithEntropyKey,
 } from './entropy-keys';
@@ -15,6 +17,15 @@ const GetPublicEntropyKeyParamsSchema = z.object({
 const SignMessageParamsSchema = z.object({
   message: z.string().startsWith('metamask:'),
   entropySourceId: z.string().optional(),
+});
+
+const DecryptMessageParamsSchema = z.object({
+  data: z.object({
+    version: z.string().regex(/^x25519-xsalsa20-poly1305$/u),
+    nonce: z.string().length(32).base64(), // 24 bytes, base64 encoded
+    ephemPublicKey: z.string().length(44).base64(), // 32 bytes, base64 encoded
+    ciphertext: z.string().base64(),
+  }),
 });
 
 /**
@@ -49,6 +60,24 @@ function assertGetPublicKeyParams(
     throw rpcErrors.invalidParams({
       message:
         '`getPublicKey`, must take an optional `entropySourceId` parameter',
+    });
+  }
+}
+
+/**
+ * Asserts the shape of the `decryptMessage` request matches the expected {data: Eip1024EncryptedData}.
+ * @param params - The input params to assert.
+ * @returns {never} Returns nothing, but will throw error if params don't match what is required.
+ */
+function assertDecryptMessageParams(
+  params: unknown,
+): asserts params is z.infer<typeof DecryptMessageParamsSchema> {
+  try {
+    DecryptMessageParamsSchema.parse(params);
+  } catch (error: any) {
+    throw rpcErrors.invalidParams({
+      message:
+        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
     });
   }
 }
@@ -106,6 +135,15 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       assertSignMessageParams(params);
       const { message, entropySourceId } = params;
       return await signMessageWithEntropyKey(message, entropySourceId, salt);
+    }
+    case 'getEncryptionPublicKey': {
+      return getEncryptionPublicKey();
+    }
+    case 'decryptMessage': {
+      const { params } = request;
+      assertDecryptMessageParams(params);
+      const { data } = params;
+      return await decryptMessage(data);
     }
     default:
       throw rpcErrors.methodNotFound({

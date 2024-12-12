@@ -4,6 +4,8 @@ import { sha256 } from '@noble/hashes/sha256';
 
 import {
   getAllPublicEntropyKeys,
+  decryptMessage,
+  getEncryptionPublicKey,
   getPublicEntropyKey,
   signMessageWithEntropyKey,
 } from './entropy-keys';
@@ -104,6 +106,31 @@ describe('getAllPublicEntropyKeys() tests', () => {
       ['id1', MOCK_PUBLIC_KEY],
       ['id2', MOCK_PUBLIC_KEY_SRP2],
     ]);
+  });
+});
+
+describe('getEncryptionPublicKey() tests', () => {
+  it('gets the expected encryption key', async () => {
+    mockSnapGetEntropy();
+
+    const publicEncryptionKey = await getEncryptionPublicKey();
+    const EXPECTED_KEY =
+      '0x50cbcf3915730e501b7476e92157307f6e9aade2a2798cf3832f73cd4990281b';
+    expect(publicEncryptionKey).toBe(EXPECTED_KEY);
+  });
+
+  it('decrypts a message intended for this public encryption key', async () => {
+    mockSnapGetEntropy();
+
+    const encrypted = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+
+    const decrypted = await decryptMessage(encrypted);
+    expect(decrypted).toBe('hello world');
   });
 });
 
