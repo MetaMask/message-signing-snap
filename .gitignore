@@ -77,4 +77,5 @@ node_modules/
 !.yarn/sdks
 !.yarn/versions
 
+# ignore intellij local files
 .idea/
