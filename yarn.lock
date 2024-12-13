@@ -2081,7 +2081,7 @@ __metadata:
     "@metamask/eslint-config-jest": ^12.1.0
     "@metamask/eslint-config-nodejs": ^12.1.0
     "@metamask/eslint-config-typescript": ^12.1.0
-    "@metamask/rpc-errors": ^6.3.0
+    "@metamask/rpc-errors": ^7.0.1
     "@metamask/snaps-cli": ^6.2.1
     "@metamask/snaps-controllers": ^9.2.0
     "@metamask/snaps-jest": ^8.2.0
@@ -2196,16 +2196,6 @@ __metadata:
   peerDependencies:
     webextension-polyfill: ^0.10.0 || ^0.11.0 || ^0.12.0
   checksum: 40e88f2a5ac00b0d9c58b4c13e376c340bcd9078a647ac778ceaeb9f17bc5b7a21cc892affe2950bfbdffe158cbad935c3c32c18a95dedcf13a7e24ab01ab271
-  languageName: node
-  linkType: hard
-
-"@metamask/rpc-errors@npm:^6.3.0":
-  version: 6.4.0
-  resolution: "@metamask/rpc-errors@npm:6.4.0"
-  dependencies:
-    "@metamask/utils": ^9.0.0
-    fast-safe-stringify: ^2.0.6
-  checksum: d0c77097f4d6ff0bafc4e4c915285c4320bdd119ef79f1833ec208deaeeb755500efefbb422f39210801b1061963449431d2e19715a5eb3d06ce0b5c150a75a1
   languageName: node
   linkType: hard
 
