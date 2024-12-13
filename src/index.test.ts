@@ -167,11 +167,51 @@ describe('onRpcRequest - decryptMessage', () => {
     });
   });
 
+  it('should reject a message with missing version', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+      stack: expect.any(String),
+    });
+  });
+
   it('should reject a message with invalid nonce', async () => {
     const snap = await installSnap();
     const encryptedMessage = {
       version: 'x25519-xsalsa20-poly1305',
       nonce: 'tooshort',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+      stack: expect.any(String),
+    });
+  });
+
+  it('should reject a message with missing nonce', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      version: 'x25519-xsalsa20-poly1305',
       ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
       ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
     };
@@ -209,7 +249,27 @@ describe('onRpcRequest - decryptMessage', () => {
     });
   });
 
-  it('should reject a message with invalid params', async () => {
+  it('should reject a message with missing ephemPublicKey', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+      stack: expect.any(String),
+    });
+  });
+
+  it('should reject a message with invalid params type', async () => {
     const snap = await installSnap();
     const encryptedMessage = JSON.stringify({
       version: 'x25519-xsalsa20-poly1305',

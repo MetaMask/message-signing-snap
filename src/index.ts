@@ -21,7 +21,7 @@ const SignMessageParamsSchema = z.object({
 
 const DecryptMessageParamsSchema = z.object({
   data: z.object({
-    version: z.string().regex(/^x25519-xsalsa20-poly1305$/u),
+    version: z.literal('x25519-xsalsa20-poly1305'),
     nonce: z.string().length(32).base64(), // 24 bytes, base64 encoded
     ephemPublicKey: z.string().length(44).base64(), // 32 bytes, base64 encoded
     ciphertext: z.string().base64(),
