@@ -75,10 +75,10 @@ describe('errors:', () => {
       'CyTDtSMUSxJ8wQ5Ht7fvko2frSuEEE9Srs5hZ/IODQ4=',
     );
     const encrypted = {
-      version: 'ed25519-xsalsa20-poly1305',
+      version: 'unsupported version',
     };
     expect(() => ERC1024.decrypt(encrypted as any, receiverSecret)).toThrow(
-      'Encryption type/version not supported.',
+      'Encryption type/version not supported (unsupported version).',
     );
   });
 

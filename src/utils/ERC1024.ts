@@ -47,7 +47,7 @@ const encrypt = (
       } as Eip1024EncryptedData;
     }
     default:
-      throw new Error('Encryption type/version not supported');
+      throw new Error(`Encryption type/version not supported ${version}`);
   }
 };
 
@@ -88,7 +88,9 @@ const decrypt = (
       return bytesToUtf8(decryptedMessage);
     }
     default:
-      throw new Error('Encryption type/version not supported.');
+      throw new Error(
+        `Encryption type/version not supported (${encryptedData.version}).`,
+      );
   }
 };
 
