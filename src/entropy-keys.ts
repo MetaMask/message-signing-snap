@@ -1,17 +1,25 @@
+import type { Eip1024EncryptedData, Hex } from '@metamask/utils';
+import { bytesToHex, concatBytes } from '@metamask/utils';
+import { utf8ToBytes } from '@noble/ciphers/utils';
+import { x25519 } from '@noble/curves/ed25519';
 import { secp256k1 } from '@noble/curves/secp256k1';
 import { sha256 } from '@noble/hashes/sha256';
 
 import { addressToBytes, bytesToAddress } from './utils/address-conversion';
+import { ERC1024 } from './utils/ERC1024';
 
 /**
  * Retrieve the snap entropy private key.
+ * @param salt - Optional salt to use for the entropy derivation. Useful for generating keys for different purposes.
  * @returns Entropy Private Key Hex.
+ * @see https://metamask.github.io/SIPs/SIPS/sip-6
  */
-async function getEntropy(): Promise<`0x${string}`> {
+async function getEntropy(salt: string = ''): Promise<`0x${string}`> {
   const entropy = await snap.request({
     method: 'snap_getEntropy',
     params: {
       version: 1,
+      salt,
     },
   });
 
@@ -35,6 +43,42 @@ async function getPrivateEntropyKey(): Promise<Uint8Array> {
 export async function getPublicEntropyKey(): Promise<string> {
   const privateKey = await getPrivateEntropyKey();
   return bytesToAddress(secp256k1.getPublicKey(privateKey));
+}
+
+// This is used to derive an encryption key from the entropy, to avoid key reuse.
+const KEY_PURPOSE_ENCRYPTION = 'metamask:snaps:encryption';
+
+/**
+ * Retrieve the secret encryption key for this snap.
+ * @returns Encryption Secret Key Bytes.
+ * @see https://metamask.github.io/SIPs/SIPS/sip-6 for more information about how the derivation works.
+ */
+async function getEncryptionSecretKey(): Promise<Uint8Array> {
+  const privateEntropy = await getEntropy(KEY_PURPOSE_ENCRYPTION);
+  return sha256(
+    concatBytes([privateEntropy, utf8ToBytes(KEY_PURPOSE_ENCRYPTION)]),
+  );
+}
+
+/**
+ * Retrieve the public encryption key for this snap.
+ * @returns Public Key Hex.
+ */
+export async function getEncryptionPublicKey(): Promise<Hex> {
+  const secretKeyBytes = await getEncryptionSecretKey();
+  return bytesToHex(x25519.getPublicKey(secretKeyBytes));
+}
+
+/**
+ * Decrypt an encrypted message using the snap specific encryption key.
+ * @param encryptedMessage - The encrypted message, encoded as a `Eip1024EncryptedData` object.
+ * @returns The decrypted message (string).
+ */
+export async function decryptMessage(
+  encryptedMessage: Eip1024EncryptedData,
+): Promise<string> {
+  const secretKeyBytes = await getEncryptionSecretKey();
+  return ERC1024.decrypt(encryptedMessage, secretKeyBytes);
 }
 
 /**
