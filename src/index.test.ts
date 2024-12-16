@@ -6,7 +6,6 @@ import { sha256 } from '@noble/hashes/sha256';
 
 import { INTERNAL_ORIGINS } from '.';
 import type { EntropySourceIdSrpIdMap } from './types';
-
 import { ERC1024 } from './utils/ERC1024';
 
 describe('onRpcRequest - getPublicKey', () => {

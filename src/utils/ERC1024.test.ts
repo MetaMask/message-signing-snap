@@ -1,4 +1,10 @@
-import { base64ToBytes, bytesToHex } from '@metamask/utils';
+import {
+  base64ToBytes,
+  bytesToBase64,
+  bytesToHex,
+  hexToBytes,
+} from '@metamask/utils';
+import { x25519 } from '@noble/curves/ed25519';
 
 import { ERC1024 } from './ERC1024';
 import { nacl } from './nacl';
@@ -17,6 +23,34 @@ describe('successfully', () => {
     expect(base64ToBytes(encrypted.ephemPublicKey)).toHaveLength(32);
   });
 
+  // see test cases in https://github.com/ethereum/EIPs/pull/1098
+  it('generates expected keys', () => {
+    const receiverSecret =
+      '7e5374ec2ef0d91761a6e72fdf8f6ac665519bfdf6da0a2329cf0d804514b816';
+    const receiverPublicKey = bytesToBase64(
+      x25519.getPublicKey(hexToBytes(receiverSecret)),
+    );
+    expect(receiverPublicKey).toBe(
+      'C5YMNdqE4kLgxQhJO1MfuQcHP5hjVSXzamzd/TxlR0U=',
+    );
+  });
+
+  // see test cases in https://github.com/ethereum/EIPs/pull/1098
+  it('decrypts static message', () => {
+    const receiverSecretKey = hexToBytes(
+      '7e5374ec2ef0d91761a6e72fdf8f6ac665519bfdf6da0a2329cf0d804514b816',
+    );
+    const encryptedData = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: '1dvWO7uOnBnO7iNDJ9kO9pTasLuKNlej',
+      ephemPublicKey: 'FBH1/pAEHOOW14Lu3FWkgV3qOEcuL78Zy+qW1RwzMXQ=',
+      ciphertext: 'f8kBcl/NCyf3sybfbwAKk/np2Bzt9lRVkZejr6uh5FgnNlH/ic62DZzy',
+    };
+    const expectedDecryptedMessage = 'My name is Satoshi Buterin';
+    const decrypted = ERC1024.decrypt(encryptedData, receiverSecretKey);
+    expect(decrypted).toBe(expectedDecryptedMessage);
+  });
+
   it('encrypts to public key hex', () => {
     const receiverKeyPair = nacl.box.keyPair();
 
@@ -31,25 +65,6 @@ describe('successfully', () => {
     expect(encrypted.ciphertext).toBeDefined();
     expect(base64ToBytes(encrypted.nonce)).toHaveLength(24);
     expect(base64ToBytes(encrypted.ephemPublicKey)).toHaveLength(32);
-  });
-
-  it('decrypts static message', () => {
-    const receiverSecret = 'CyTDtSMUSxJ8wQ5Ht7fvko2frSuEEE9Srs5hZ/IODQ4=';
-    const encrypted = {
-      version: 'x25519-xsalsa20-poly1305',
-      nonce: 'EzjiHlL/0A7lViaG2OR1loa4Vu55vjKP',
-      ephemPublicKey: 'EkLpuBHg/hY72uCVOzFFxM4ku2RRhjwn2rNtQETtMiI=',
-      ciphertext: 'SOLw4OmDAhhQJf20Wk9uQbe60x1XpZIwYeMU',
-    };
-
-    const decrypted = ERC1024.decrypt(encrypted, base64ToBytes(receiverSecret));
-    expect(decrypted).toBe('hello world');
-
-    const decryptedUsingHexKey = ERC1024.decrypt(
-      encrypted,
-      bytesToHex(base64ToBytes(receiverSecret)),
-    );
-    expect(decryptedUsingHexKey).toBe('hello world');
   });
 
   it('encrypts and decrypts successfully', () => {

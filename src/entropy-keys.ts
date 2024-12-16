@@ -23,8 +23,9 @@ async function listEntropySources(): Promise<ListEntropySourcesResult> {
 /**
  * Retrieve the snap entropy private key.
  * @param entropySourceId - Optional entropy Source ID following SIP-30.
- * @param salt - The salt used to obtain a domain specific entropy. Metamask internal origins should use `undefined`.
+ * @param salt - Optional salt to use for the entropy derivation. Useful for generating keys for different purposes and/or to obtain a domain specific entropy.
  * @returns Entropy Private Key Hex.
+ * @see https://metamask.github.io/SIPs/SIPS/sip-6
  */
 async function getEntropy(
   entropySourceId?: EntropySourceId,
@@ -94,16 +95,18 @@ export async function getAllPublicEntropyKeys(
 }
 
 // This is used to derive an encryption key from the entropy, to avoid key reuse.
-const staticSalt = 'metamask:snaps:encryption';
+const KEY_PURPOSE_ENCRYPTION = 'metamask:snaps:encryption';
 
 /**
  * Retrieve the secret encryption key for this snap.
- * The key is derived from the entropy key and a static salt as sha256(entropy | staticSalt).
- * @returns Secret Key Bytes.
+ * @returns Encryption Secret Key Bytes.
+ * @see https://metamask.github.io/SIPs/SIPS/sip-6 for more information about how the derivation works.
  */
 async function getEncryptionSecretKey(): Promise<Uint8Array> {
-  const privateEntropy = await getPrivateEntropyKey();
-  return sha256(concatBytes([privateEntropy, utf8ToBytes(staticSalt)]));
+  const privateEntropy = await getEntropy(undefined, KEY_PURPOSE_ENCRYPTION);
+  return sha256(
+    concatBytes([privateEntropy, utf8ToBytes(KEY_PURPOSE_ENCRYPTION)]),
+  );
 }
 
 /**
