@@ -3,6 +3,67 @@ import { sha256 } from '@noble/hashes/sha256';
 
 import { addressToBytes, bytesToAddress } from './utils/address-conversion';
 
+// Temporary work while waiting for snap_listEntropySources to be implemented
+export type EntropySource = {
+  name: string;
+  id: string;
+  type: 'mnemonic';
+  primary: boolean;
+};
+
+/**
+ * Lists the entropy sources available for the snap.
+ * @returns Entropy Sources.
+ */
+async function listEntropySources(): Promise<EntropySource[]> {
+  const entropySources = await snap.request({
+    method: 'snap_listEntropySources',
+    params: {
+      version: 1,
+    },
+  } as any);
+
+  return entropySources as EntropySource[];
+}
+
+/**
+ * Generates an SRP ID from an entropy source id.
+ * @param entropySourceId - Entropy Source ID.
+ * @returns SRP ID.
+ */
+export async function generateSrpIdFromEntropySource(
+  entropySourceId: string,
+): Promise<string> {
+  const srpId = await snap.request({
+    method: 'snap_getEntropy',
+    params: {
+      version: 1,
+      salt: 'srp-id',
+      source: entropySourceId,
+    },
+  } as any);
+
+  return srpId as string;
+}
+
+/**
+ * Gets an array of all entropy source IDs and their corresponding SRP IDs.
+ * @returns Entropy Source IDs and SRP IDs Relationship Map.
+ */
+export async function getEntropySourceIdsAndSrpIdsRelationshipMap(): Promise<
+  [string, string][]
+> {
+  const entropySources = await listEntropySources();
+  const entropySourceIdsAndSrpIdsMap: [string, string][] = [];
+
+  for (const entropySource of entropySources) {
+    const srpId = await generateSrpIdFromEntropySource(entropySource.id);
+    entropySourceIdsAndSrpIdsMap.push([entropySource.id, srpId]);
+  }
+
+  return entropySourceIdsAndSrpIdsMap;
+}
+
 /**
  * Retrieve the snap entropy private key.
  * @returns Entropy Private Key Hex.
