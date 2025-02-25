@@ -1,5 +1,4 @@
 import {
-  generateSrpIdFromEntropySource,
   getEntropySourceIdsAndSrpIdsRelationshipMap,
   getPublicEntropyKey,
   signMessageWithEntropyKey,
@@ -18,6 +17,14 @@ describe('getPublicEntropyKey() tests', () => {
     const address = await getPublicEntropyKey();
     expect(address).toBe(MOCK_PUBLIC_KEY);
   });
+
+  it('should return a public key from a known private key with a source ID', async () => {
+    mockSnapGetEntropy();
+
+    // TODO: Fix this test when SIP-30 is implemented
+    const address = await getPublicEntropyKey('mockEntropySourceId');
+    expect(address).toBe(MOCK_PUBLIC_KEY);
+  });
 });
 
 describe('signMessageWithEntropyKey() tests', () => {
@@ -28,29 +35,6 @@ describe('signMessageWithEntropyKey() tests', () => {
     const EXPECTED_SIGNATURE =
       '0x9499d23f16a2fd8511064f7622e0b0c8430d03fd65fda06c85510dfa33e86490781f39d54e880acb76a2ac5a241ba9e68a6a5bee88960ff918c82a54f002492b';
     expect(signature).toBe(EXPECTED_SIGNATURE);
-  });
-});
-
-describe('generateSrpIdFromEntropySource() tests', () => {
-  it('should generate SRP ID from entropy source ID', async () => {
-    const mockSrpId = 'mockSrpId';
-
-    const mockSnapRequest = jest
-      .fn()
-      .mockImplementation(async (r: { method: string }) => {
-        if (r.method === 'snap_getEntropy') {
-          return mockSrpId;
-        }
-
-        throw new Error(`TEST ENV - Snap Request was not mocked: ${r.method}`);
-      });
-
-    (global as any).snap = {
-      request: mockSnapRequest,
-    };
-
-    const srpId = await generateSrpIdFromEntropySource('mockEntropySourceId');
-    expect(srpId).toBe(mockSrpId);
   });
 });
 
