@@ -3,6 +3,8 @@ import { hexToBytes } from '@noble/ciphers/utils';
 import { secp256k1 } from '@noble/curves/secp256k1';
 import { sha256 } from '@noble/hashes/sha256';
 
+import type { EntropySourceIdSrpIdMap } from './types';
+
 describe('onRpcRequest - getPublicKey', () => {
   it('should return this snaps public key', async () => {
     const snap = await installSnap();
@@ -16,6 +18,25 @@ describe('onRpcRequest - getPublicKey', () => {
     const result = 'result' in response.response && response.response.result;
     expect(result?.toString().length).toBe(68);
     expect(result?.toString().startsWith('0x')).toBe(true);
+  });
+});
+
+describe('onRpcRequest - getAllPublicKeys', () => {
+  it('should return the relationship map of entropy source IDs and SRP IDs', async () => {
+    const snap = await installSnap();
+
+    const response = await snap.request({
+      method: 'getAllPublicKeys',
+    });
+
+    const result =
+      'result' in response.response &&
+      (response.response.result as unknown as EntropySourceIdSrpIdMap);
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('object');
+    expect((result as EntropySourceIdSrpIdMap).length).toBeGreaterThanOrEqual(
+      1,
+    );
   });
 });
 
@@ -110,60 +131,5 @@ describe('onRpcRequest - bad request', () => {
       },
       stack: expect.any(String),
     });
-  });
-});
-
-describe('onRpcRequest - generateSrpId', () => {
-  it('should generate an SRP ID for a valid entropy source ID', async () => {
-    const snap = await installSnap();
-    const entropySourceId = 'validEntropySourceId';
-
-    const response = await snap.request({
-      method: 'generateSrpId',
-      params: { entropySourceId },
-    });
-
-    const result = 'result' in response.response && response.response.result;
-    expect(result).toBeDefined();
-    expect(typeof result).toBe('string');
-  });
-
-  it('should fail if invalid entropy source ID is provided', async () => {
-    const snap = await installSnap();
-
-    function assertInvalidParams(res: unknown) {
-      expect(res).toRespondWithError({
-        code: -32602,
-        message: 'Expected `entropySourceId` to be a string.',
-        stack: expect.any(String),
-      });
-    }
-
-    // no entropySourceId
-    const responseNoEntropySourceId = await snap.request({
-      method: 'generateSrpId',
-    });
-    assertInvalidParams(responseNoEntropySourceId);
-
-    // invalid entropySourceId type
-    const responseInvalidEntropySourceIdType = await snap.request({
-      method: 'generateSrpId',
-      params: { entropySourceId: 123 },
-    });
-    assertInvalidParams(responseInvalidEntropySourceIdType);
-  });
-});
-
-describe('onRpcRequest - getEntropySourceIdsAndSrpIdsRelationshipMap', () => {
-  it('should return the relationship map of entropy source IDs and SRP IDs', async () => {
-    const snap = await installSnap();
-
-    const response = await snap.request({
-      method: 'getEntropySourceIdsAndSrpIdsRelationshipMap',
-    });
-
-    const result = 'result' in response.response && response.response.result;
-    expect(result).toBeDefined();
-    expect(typeof result).toBe('object');
   });
 });

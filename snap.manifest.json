@@ -7,7 +7,7 @@
     "url": "https://github.com/MetaMask/message-signing-snap.git"
   },
   "source": {
-    "shasum": "zDt2ti5RvjwLTsnYKSWe+izQPiDLBic0Um2iuQ43k8A=",
+    "shasum": "2vteZWzXhjuRQR0JO73b44lwzfv6hHQ59CzvDE1xg7M=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -19,12 +19,11 @@
   },
   "initialPermissions": {
     "snap_getEntropy": {},
-    "snap_listEntropySources": {},
     "endowment:rpc": {
       "dapps": true,
       "snaps": false
     }
   },
-  "platformVersion": "6.18.0",
+  "platformVersion": "6.19.0",
   "manifestVersion": "0.1"
 }

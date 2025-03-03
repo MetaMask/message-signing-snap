@@ -1,30 +1,19 @@
 import { secp256k1 } from '@noble/curves/secp256k1';
 import { sha256 } from '@noble/hashes/sha256';
 
+import type { EntropySourceId, EntropySourceIdSrpIdMap } from './types';
 import { addressToBytes, bytesToAddress } from './utils/address-conversion';
-
-// TODO: Remove this import when snap_listEntropySources is implemented
-// Temporary work while waiting for snap_listEntropySources to be implemented
-export type EntropySource = {
-  name: string;
-  id: string;
-  type: 'mnemonic';
-  primary: boolean;
-};
 
 /**
  * Lists the entropy sources available for the snap.
  * @returns Entropy Sources.
  */
-async function listEntropySources(): Promise<EntropySource[]> {
+async function listEntropySources() {
   const entropySources = await snap.request({
     method: 'snap_listEntropySources',
-    params: {
-      version: 1,
-    },
-  } as any);
+  });
 
-  return entropySources as EntropySource[];
+  return entropySources;
 }
 
 /**
@@ -32,14 +21,12 @@ async function listEntropySources(): Promise<EntropySource[]> {
  * @param entropySourceId - Optional entropy Source ID following SIP-30.
  * @returns Entropy Private Key Hex.
  */
-async function getEntropy(
-  entropySourceId?: EntropySource['id'],
-): Promise<`0x${string}`> {
+async function getEntropy(entropySourceId?: EntropySourceId) {
   const entropy = await snap.request({
     method: 'snap_getEntropy',
     params: {
       version: 1,
-      ...(entropySourceId ? { source: entropySourceId } : {}),
+      source: entropySourceId,
     },
   });
 
@@ -53,7 +40,7 @@ async function getEntropy(
  * @returns Private Key Bytes.
  */
 async function getPrivateEntropyKey(
-  entropySourceId?: EntropySource['id'],
+  entropySourceId?: EntropySourceId,
 ): Promise<Uint8Array> {
   const privateKeyWith0x = await getEntropy(entropySourceId);
   return addressToBytes(privateKeyWith0x);
@@ -68,7 +55,7 @@ async function getPrivateEntropyKey(
  * @returns Public Key Hex.
  */
 export async function getPublicEntropyKey(
-  entropySourceId?: EntropySource['id'],
+  entropySourceId?: EntropySourceId,
 ): Promise<string> {
   const privateKey = await getPrivateEntropyKey(entropySourceId);
   return bytesToAddress(secp256k1.getPublicKey(privateKey));
@@ -78,16 +65,16 @@ export async function getPublicEntropyKey(
  * Gets an array of all entropy source IDs and their corresponding SRP IDs.
  * @returns Entropy Source IDs and SRP IDs Relationship Map.
  */
-export async function getEntropySourceIdsAndSrpIdsRelationshipMap(): Promise<
-  [string, string][]
-> {
+export async function getAllPublicEntropyKeys(): Promise<EntropySourceIdSrpIdMap> {
   const entropySources = await listEntropySources();
-  const entropySourceIdsAndSrpIdsMap: [string, string][] = [];
+  const entropySourceIdsAndSrpIdsMap: EntropySourceIdSrpIdMap = [];
 
-  for (const entropySource of entropySources) {
-    const srpId = await getPublicEntropyKey(entropySource.id);
-    entropySourceIdsAndSrpIdsMap.push([entropySource.id, srpId]);
-  }
+  await Promise.all(
+    entropySources.map(async (entropySource) => {
+      const srpId = await getPublicEntropyKey(entropySource.id);
+      entropySourceIdsAndSrpIdsMap.push([entropySource.id, srpId]);
+    }),
+  );
 
   return entropySourceIdsAndSrpIdsMap;
 }

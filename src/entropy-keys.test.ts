@@ -1,6 +1,8 @@
+import type { ListEntropySourcesResult } from '@metamask/snaps-sdk';
+
 import {
-  getEntropySourceIdsAndSrpIdsRelationshipMap,
   getPublicEntropyKey,
+  getAllPublicEntropyKeys,
   signMessageWithEntropyKey,
 } from './entropy-keys';
 
@@ -21,7 +23,6 @@ describe('getPublicEntropyKey() tests', () => {
   it('should return a public key from a known private key with a source ID', async () => {
     mockSnapGetEntropy();
 
-    // TODO: Fix this test when SIP-30 is implemented
     const address = await getPublicEntropyKey('mockEntropySourceId');
     expect(address).toBe(MOCK_PUBLIC_KEY);
   });
@@ -38,13 +39,12 @@ describe('signMessageWithEntropyKey() tests', () => {
   });
 });
 
-describe('getEntropySourceIdsAndSrpIdsRelationshipMap() tests', () => {
+describe('getAllPublicEntropyKeys() tests', () => {
   it('should get entropy source IDs and SRP IDs relationship map', async () => {
     const mockEntropySources = [
       { name: 'source1', id: 'id1', type: 'mnemonic', primary: true },
       { name: 'source2', id: 'id2', type: 'mnemonic', primary: false },
-    ];
-    const mockSrpIds = ['srpId1', 'srpId2'];
+    ] as ListEntropySourcesResult;
 
     const mockSnapRequest = jest
       .fn()
@@ -52,7 +52,7 @@ describe('getEntropySourceIdsAndSrpIdsRelationshipMap() tests', () => {
         if (r.method === 'snap_listEntropySources') {
           return mockEntropySources;
         } else if (r.method === 'snap_getEntropy') {
-          return mockSrpIds.shift();
+          return MOCK_PRIVATE_KEY;
         }
 
         throw new Error(`TEST ENV - Snap Request was not mocked: ${r.method}`);
@@ -62,10 +62,10 @@ describe('getEntropySourceIdsAndSrpIdsRelationshipMap() tests', () => {
       request: mockSnapRequest,
     };
 
-    const relationshipMap = await getEntropySourceIdsAndSrpIdsRelationshipMap();
+    const relationshipMap = await getAllPublicEntropyKeys();
     expect(relationshipMap).toStrictEqual([
-      ['id1', 'srpId1'],
-      ['id2', 'srpId2'],
+      ['id1', MOCK_PUBLIC_KEY],
+      ['id2', MOCK_PUBLIC_KEY],
     ]);
   });
 });

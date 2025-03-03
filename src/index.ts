@@ -4,10 +4,13 @@ import { z } from 'zod';
 
 import {
   getPublicEntropyKey,
+  getAllPublicEntropyKeys,
   signMessageWithEntropyKey,
-  generateSrpIdFromEntropySource,
-  getEntropySourceIdsAndSrpIdsRelationshipMap,
 } from './entropy-keys';
+
+const GetPublicEntropyKeyParamsSchema = z.object({
+  entropySourceId: z.string().optional(),
+});
 
 const SignMessageParamsSchema = z.object({
   message: z.string().startsWith('metamask:'),
@@ -32,22 +35,19 @@ function assertSignMessageParams(
 }
 
 /**
- * Asserts the shape of the `generateSrpId` request.
+ * Asserts the shape of the `getPublicKey` request.
  * @param params - Any method params to assert.
  * @returns {never} Returns nothing, but will throw error if params don't match what is required.
  */
-function assertGenerateSrpIdParams(
+function assertGetPublicKeyParams(
   params: unknown,
-): asserts params is { entropySourceId: string } {
-  if (typeof params !== 'object' || params === null) {
+): asserts params is z.infer<typeof GetPublicEntropyKeyParamsSchema> {
+  try {
+    GetPublicEntropyKeyParamsSchema.parse(params);
+  } catch {
     throw rpcErrors.invalidParams({
-      message: 'Expected an object as the first parameter.',
-    });
-  }
-
-  if (typeof (params as any).entropySourceId !== 'string') {
-    throw rpcErrors.invalidParams({
-      message: 'Expected `entropySourceId` to be a string.',
+      message:
+        '`getPublicKey`, must take an optional `entropySourceId` parameter',
     });
   }
 }
@@ -55,22 +55,24 @@ function assertGenerateSrpIdParams(
 export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
   switch (request.method) {
     case 'getPublicKey': {
-      return getPublicEntropyKey();
+      const { params } = request;
+
+      if (!params) {
+        return getPublicEntropyKey();
+      }
+
+      assertGetPublicKeyParams(params);
+      const { entropySourceId } = params;
+      return getPublicEntropyKey(entropySourceId);
+    }
+    case 'getAllPublicKeys': {
+      return getAllPublicEntropyKeys();
     }
     case 'signMessage': {
       const { params } = request;
       assertSignMessageParams(params);
       const { message } = params;
       return await signMessageWithEntropyKey(message);
-    }
-    case 'generateSrpId': {
-      const { params } = request;
-      assertGenerateSrpIdParams(params);
-      const { entropySourceId } = params;
-      return await generateSrpIdFromEntropySource(entropySourceId);
-    }
-    case 'getEntropySourceIdsAndSrpIdsRelationshipMap': {
-      return await getEntropySourceIdsAndSrpIdsRelationshipMap();
     }
     default:
       throw rpcErrors.methodNotFound({
