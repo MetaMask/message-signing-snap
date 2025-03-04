@@ -25,6 +25,7 @@
   },
   "initialPermissions": {
     "snap_getEntropy": {},
+    "snap_listEntropySources": {},
     "endowment:rpc": {
       "dapps": true,
       "snaps": false
