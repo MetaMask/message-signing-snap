@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0]
+
+### Uncategorized
+
+- feat: add `srpId` management ([#116](https://github.com/MetaMask/message-signing-snap/pull/116))
+- chore: update packages and sha ([#103](https://github.com/MetaMask/message-signing-snap/pull/103))
+
 ## [0.6.0]
 
 ### Changed
@@ -64,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.3.3...v0.4.0
