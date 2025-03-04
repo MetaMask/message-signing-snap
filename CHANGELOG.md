@@ -9,9 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.0]
 
-### Uncategorized
+### Added
 
 - feat: add `srpId` management ([#116](https://github.com/MetaMask/message-signing-snap/pull/116))
+
+### Changed
+
 - chore: update packages and sha ([#103](https://github.com/MetaMask/message-signing-snap/pull/103))
 
 ## [0.6.0]
