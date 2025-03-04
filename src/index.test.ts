@@ -3,6 +3,8 @@ import { hexToBytes } from '@noble/ciphers/utils';
 import { secp256k1 } from '@noble/curves/secp256k1';
 import { sha256 } from '@noble/hashes/sha256';
 
+import type { EntropySourceIdSrpIdMap } from './types';
+
 describe('onRpcRequest - getPublicKey', () => {
   it('should return this snaps public key', async () => {
     const snap = await installSnap();
@@ -16,6 +18,25 @@ describe('onRpcRequest - getPublicKey', () => {
     const result = 'result' in response.response && response.response.result;
     expect(result?.toString().length).toBe(68);
     expect(result?.toString().startsWith('0x')).toBe(true);
+  });
+});
+
+describe('onRpcRequest - getAllPublicKeys', () => {
+  it('should return the relationship map of entropy source IDs and SRP IDs', async () => {
+    const snap = await installSnap();
+
+    const response = await snap.request({
+      method: 'getAllPublicKeys',
+    });
+
+    const result =
+      'result' in response.response &&
+      (response.response.result as unknown as EntropySourceIdSrpIdMap);
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('object');
+    expect((result as EntropySourceIdSrpIdMap).length).toBeGreaterThanOrEqual(
+      1,
+    );
   });
 });
 
