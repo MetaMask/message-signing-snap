@@ -3,8 +3,8 @@ import type { OnRpcRequestHandler } from '@metamask/snaps-sdk';
 import { z } from 'zod';
 
 import {
-  getPublicEntropyKey,
   getAllPublicEntropyKeys,
+  getPublicEntropyKey,
   signMessageWithEntropyKey,
 } from './entropy-keys';
 
@@ -14,6 +14,7 @@ const GetPublicEntropyKeyParamsSchema = z.object({
 
 const SignMessageParamsSchema = z.object({
   message: z.string().startsWith('metamask:'),
+  entropySourceId: z.string().optional(),
 });
 
 /**
@@ -52,27 +53,73 @@ function assertGetPublicKeyParams(
   }
 }
 
-export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
+/**
+ * Request origins that should not be salted.
+ * @internal
+ */
+export const INTERNAL_ORIGINS = [
+  'https://portfolio.metamask.io',
+  'https://portfolio-builds.metafi-dev.codefi.network',
+  'https://docs.metamask.io',
+  'https://developer.metamask.io',
+  '', // calls coming from the extension or mobile app will have an empty origin
+];
+
+/**
+ * Creates a salt based on the origin.
+ * Metamask internal origins should return `undefined`.
+ * @param origin - The origin of the RPC request.
+ * @param method - The RPC method being called.
+ * @returns The salt used to obtain a domain specific entropy.
+ * @internal
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function getSaltByOriginAndMethod(
+  origin: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  method: string,
+): string | undefined {
+  // TODO: use smarter matching here
+  if (isEmpty(origin) || INTERNAL_ORIGINS.includes(origin)) {
+    return undefined;
+  }
+  return origin;
+}
+
+/**
+ * Checks if a value is the empty string, null or undefined.
+ * @param value - The value to check.
+ * @returns {boolean} Returns true if the value is empty, false otherwise.
+ */
+function isEmpty(value: string): boolean {
+  return typeof value === `undefined` || value === null || value === '';
+}
+
+export const onRpcRequest: OnRpcRequestHandler = async ({
+  request,
+  origin,
+}) => {
+  const salt = getSaltByOriginAndMethod(origin, request.method);
   switch (request.method) {
     case 'getPublicKey': {
       const { params } = request;
 
       if (!params) {
-        return getPublicEntropyKey();
+        return getPublicEntropyKey(undefined, salt);
       }
 
       assertGetPublicKeyParams(params);
       const { entropySourceId } = params;
-      return getPublicEntropyKey(entropySourceId);
+      return getPublicEntropyKey(entropySourceId, salt);
     }
     case 'getAllPublicKeys': {
-      return getAllPublicEntropyKeys();
+      return getAllPublicEntropyKeys(salt);
     }
     case 'signMessage': {
       const { params } = request;
       assertSignMessageParams(params);
-      const { message } = params;
-      return await signMessageWithEntropyKey(message);
+      const { message, entropySourceId } = params;
+      return await signMessageWithEntropyKey(message, entropySourceId, salt);
     }
     default:
       throw rpcErrors.methodNotFound({
