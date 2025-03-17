@@ -82,12 +82,14 @@ export async function getAllPublicEntropyKeys(): Promise<EntropySourceIdSrpIdMap
 /**
  * Signs a message and returns the signature.
  * @param message - Message to sign.
+ * @param entropySourceId - Optional entropy Source ID following SIP-30.
  * @returns Signed Message String.
  */
 export async function signMessageWithEntropyKey(
   message: string,
+  entropySourceId?: EntropySourceId,
 ): Promise<string> {
-  const privateKey = await getPrivateEntropyKey();
+  const privateKey = await getPrivateEntropyKey(entropySourceId);
 
   // We will create the signature using a sha result from the incoming message
   const shaMessage = sha256(message);
