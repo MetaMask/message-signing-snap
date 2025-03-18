@@ -69,37 +69,23 @@ export const INTERNAL_ORIGINS = [
  * Creates a salt based on the origin.
  * Metamask internal origins should return `undefined`.
  * @param origin - The origin of the RPC request.
- * @param method - The RPC method being called.
  * @returns The salt used to obtain a domain specific entropy.
  * @internal
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getSaltByOriginAndMethod(
-  origin: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  method: string,
-): string | undefined {
+export function getSaltByOrigin(origin: string): string | undefined {
   // TODO: use smarter matching here
-  if (isEmpty(origin) || INTERNAL_ORIGINS.includes(origin)) {
+  if (!origin || INTERNAL_ORIGINS.includes(origin)) {
     return undefined;
   }
   return origin;
-}
-
-/**
- * Checks if a value is the empty string, null or undefined.
- * @param value - The value to check.
- * @returns {boolean} Returns true if the value is empty, false otherwise.
- */
-function isEmpty(value: string): boolean {
-  return typeof value === `undefined` || value === null || value === '';
 }
 
 export const onRpcRequest: OnRpcRequestHandler = async ({
   request,
   origin,
 }) => {
-  const salt = getSaltByOriginAndMethod(origin, request.method);
+  const salt = getSaltByOrigin(origin);
   switch (request.method) {
     case 'getPublicKey': {
       const { params } = request;

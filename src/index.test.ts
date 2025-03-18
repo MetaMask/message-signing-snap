@@ -96,7 +96,6 @@ describe('onRpcRequest - signMessage', () => {
     // Arrange - get public key
     const publicKeyResponse = await snap.request({
       method: 'getPublicKey',
-      params: {},
       origin: '',
     });
     const publicKey = ('result' in publicKeyResponse.response &&
@@ -123,7 +122,6 @@ describe('onRpcRequest - signMessage', () => {
     // Arrange - get public key
     const publicKeyResponse = await snap.request({
       method: 'getPublicKey',
-      params: {},
       origin: 'https://example.com',
     });
     const publicKey = ('result' in publicKeyResponse.response &&
@@ -150,7 +148,6 @@ describe('onRpcRequest - signMessage', () => {
     // Arrange - get public key
     const publicKeyResponse = await snap.request({
       method: 'getPublicKey',
-      params: {},
       origin: 'https://example.com',
     });
     const publicKey = ('result' in publicKeyResponse.response &&
