@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0]
 
-### Uncategorized
+### Changed
 
 - feat: generate unique entropy and keys for different origins ([#121](https://github.com/MetaMask/message-signing-snap/pull/121))
+  This is a BREAKING CHANGE.
+
+### Fixed
+
 - fix: use `entropySourceId` param when signing ([#120](https://github.com/MetaMask/message-signing-snap/pull/120))
-- chore(ci): upgrade GH workflows to match MM module template ([#119](https://github.com/MetaMask/message-signing-snap/pull/119))
 
 ## [0.7.0]
 
