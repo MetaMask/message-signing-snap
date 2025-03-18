@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0]
 
-### Uncategorized
+### Changed
 
-- feat: generate unique entropy and keys for different origins ([#121](https://github.com/MetaMask/message-signing-snap/pull/121))
+- **BREAKING** feat: generate unique entropy and keys for different origins ([#121](https://github.com/MetaMask/message-signing-snap/pull/121))
+  > Public keys and signatures are domain-specific. The snap uses the origin of the request as a salt when generating entropy, which means the same user will have different public keys and signatures across different websites. This prevents cross-site correlation of user identities. However, MetaMask internal origins (like portfolio.metamask.io, docs.metamask.io, developer.metamask.io, and the extension itself) receive unsalted keys, allowing consistent identity across the MetaMask ecosystem.
+
+### Fixed
+
 - fix: use `entropySourceId` param when signing ([#120](https://github.com/MetaMask/message-signing-snap/pull/120))
-- chore(ci): upgrade GH workflows to match MM module template ([#119](https://github.com/MetaMask/message-signing-snap/pull/119))
 
 ## [0.7.0]
 
