@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0]
+
+### Uncategorized
+
+- feat: generate unique entropy and keys for different origins ([#121](https://github.com/MetaMask/message-signing-snap/pull/121))
+- fix: use `entropySourceId` param when signing ([#120](https://github.com/MetaMask/message-signing-snap/pull/120))
+- chore(ci): upgrade GH workflows to match MM module template ([#119](https://github.com/MetaMask/message-signing-snap/pull/119))
+
 ## [0.7.0]
 
 ### Added
@@ -74,7 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.4.0...v0.5.0
