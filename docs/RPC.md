@@ -4,13 +4,17 @@
 
 Returns the public key for the deterministically random private key inside the snap.
 
+> **Note:** Public keys and signatures are domain-specific. The snap uses the origin of the requesting site as a salt when generating entropy, which means the same user will have different public keys and signatures across different websites. This prevents cross-site correlation of user identities. However, MetaMask internal origins (like portfolio.metamask.io, docs.metamask.io, developer.metamask.io, and the extension itself) receive unsalted keys, allowing consistent identity across the MetaMask ecosystem.
+
 #### Parameters
 
-None
+An object containing:
+
+- `entropySourceId` - Optional. Used to select a particular entropy source. If not provided, the default entropy source is used. See [getAllPublicKeys](#getAllPublicKeys) for a list of available entropy sources and their corresponding public keys.
 
 #### Returns
 
-A 68 character hexadecimal public key.
+A 68 character hexadecimal public key (secp256k1 in compact form, prefixed with `0x`).
 
 Example:
 
@@ -22,6 +26,37 @@ const publicKey: string = await ethereum.request({
     snapId: 'npm:@metamask/message-signing-snap',
     request: {
       method: 'getPublicKey',
+      params: {
+        entropySourceId: '...', // optional
+      },
+    },
+  },
+});
+```
+
+### getAllPublicKeys
+
+Returns an array of entropySource IDs and the corresponding public keys for them.
+
+#### Parameters
+
+- None
+
+#### Returns
+
+An array of `[EntropySourceId, string]` tuples, where the first element is the entropy source ID and the second element is the public key.
+
+> **Note:** Public keys and signatures are domain-specific. The same rules apply to this method as to [getPublicKey](#getPublicKey).
+
+Example:
+
+```ts
+const publicKeys: [] = await ethereum.request({
+  method: 'wallet_invokeSnap',
+  params: {
+    snapId: 'npm:@metamask/message-signing-snap',
+    request: {
+      method: 'getAllPublicKeys',
     },
   },
 });
@@ -29,21 +64,23 @@ const publicKey: string = await ethereum.request({
 
 ### signMessage
 
-Allows signing specific messages, tagged with `metamask:`, to be signed.
+Allows automatically signing specific messages, prefixed with `metamask:`.
+The returned signature can be verified using the public key and the message. See an [example verification](verify-a-signature) or check out the snaps tests.
 
-The returning signature can be verified using the public key. See an example verification in the snaps tests.
+> **Note:** Public keys and signatures are domain-specific. The same rules apply to this method as to [getPublicKey](#getPublicKey).
 
 #### Parameters
 
 An object containing:
 
 - `message` - The message that you are signing. The message must start with `metamask:`
+- `entropySourceId` - Optional. Used to select a particular entropy source. If not provided, the default entropy source is used. See [getAllPublicKeys](#getAllPublicKeys) for a list of available entropy sources and their corresponding public keys.
 
 #### Returns
 
 A hexadecimal string signed message (signature).
 
-You can see an example test on how you can verify this signature (secp256k1 signature)
+You can see an [example below](#verify-a-signature) on how you can verify this signature.
 
 Example:
 
@@ -57,13 +94,16 @@ const signature: string = await ethereum.request({
       method: 'signMessage',
       params: {
         message: 'metamask:my message to sign',
+        entropySourceId: '...', // optional
       },
     },
   },
 });
 ```
 
-Example how to verify signature:
+#### Verify a signature
+
+Example, how to verify a signature:
 
 ```ts
 import { secp256k1 } from '@noble/curves/secp256k1';

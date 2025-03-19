@@ -46,11 +46,30 @@ await provider.request({
 You can invoke this method once the snap is connected
 
 ```js
-await provider.request({
+const publicKeyHex = await provider.request({
   method: 'wallet_invokeSnap',
   params: {
     snapId: 'npm:@metamask/message-signing-snap',
-    request: { method: 'getPublicKey' },
+    request: {
+      method: 'getPublicKey',
+      params: {
+        entropySourceId: '...', // Optional. Select a particular entropy source. If not provided, the default entropy source is used.
+      },
+    },
+  },
+});
+```
+
+### Snap Method - Get All Public Keys
+
+You can invoke this method once the snap is connected
+
+```js
+const publicKeyTuples = await provider.request({
+  method: 'wallet_invokeSnap',
+  params: {
+    snapId: 'npm:@metamask/message-signing-snap',
+    request: { method: 'getAllPublicKeys' },
   },
 });
 ```
@@ -60,13 +79,16 @@ await provider.request({
 You can invoke this method once the snap is connected
 
 ```js
-await provider.request({
+const signatureHex = await provider.request({
   method: 'wallet_invokeSnap',
   params: {
     snapId: 'npm:@metamask/message-signing-snap',
     request: {
       method: 'signMessage',
-      params: { message: 'metamask:HelloWorld' },
+      params: {
+        message: 'metamask:HelloWorld',
+        entropySourceId: '...', // Optional. Select a particular entropy source. If not provided, the default entropy source is used.
+      },
     },
   },
 });
