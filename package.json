@@ -37,7 +37,7 @@
     "build:clean": "yarn clean && yarn build",
     "build-preinstalled-snap": "node scripts/build-preinstalled-snap.js",
     "clean": "rimraf dist",
-    "lint": "yarn lint:eslint && yarn lint:constraints && yarn lint:misc --check && yarn lint:changelog",
+    "lint": "yarn lint:eslint && yarn lint:constraints && yarn lint:misc --check && yarn lint:dependencies && yarn lint:changelog",
     "lint:changelog": "auto-changelog validate --prettier",
     "lint:constraints": "yarn constraints",
     "lint:dependencies": "depcheck && yarn dedupe",
@@ -61,7 +61,6 @@
     "@metamask/eslint-config-typescript": "^12.1.0",
     "@metamask/rpc-errors": "^6.3.0",
     "@metamask/snaps-cli": "^6.7.0",
-    "@metamask/snaps-controllers": "^10.0.1",
     "@metamask/snaps-jest": "^8.13.0",
     "@metamask/snaps-sdk": "^6.19.0",
     "@metamask/utils": "^11.2.0",
@@ -90,7 +89,7 @@
     "typescript": "^5.5.3",
     "zod": "^3.23.8"
   },
-  "packageManager": "yarn@3.2.1",
+  "packageManager": "yarn@4.1.1",
   "engines": {
     "node": "^18.18 || >=20"
   },
