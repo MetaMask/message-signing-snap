@@ -22,7 +22,6 @@ jobs:
       - uses: MetaMask/action-publish-release@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: yarn --immutable
       - run: yarn build
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -32,6 +31,7 @@ jobs:
           include-hidden-files: true
           path: |
             ./dist
+            ./snap.manifest.json
             ./node_modules/.yarn-state.yml
 
   publish-npm-dry-run:
