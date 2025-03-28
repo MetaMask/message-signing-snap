@@ -13,7 +13,6 @@ describe('onRpcRequest - getPublicKey', () => {
     const snap = await installSnap();
     const response = await snap.request({
       method: 'getPublicKey',
-      params: {},
     });
 
     // We cant really test/mock the returned private key, so we can only test the "knowns" features of the public key
@@ -30,7 +29,6 @@ describe('onRpcRequest - getPublicKey', () => {
       INTERNAL_ORIGINS.map(async (origin) => {
         return snap.request({
           method: 'getPublicKey',
-          params: {},
           origin,
         });
       }),
@@ -52,7 +50,6 @@ describe('onRpcRequest - getPublicKey', () => {
       differentOrigins.map(async (origin) => {
         return snap.request({
           method: 'getPublicKey',
-          params: {},
           origin,
         });
       }),
@@ -100,13 +97,12 @@ describe('onRpcRequest - getEncryptionPublicKey', () => {
     // E.g. length = 66 chars
     // E.g. starts with '0x'
     const result = 'result' in response.response && response.response.result;
-    expect(result?.toString().length).toBe(66);
-    expect(result?.toString().startsWith('0x')).toBe(true);
+    expect(result?.toString()).toMatch(/^0x[0-9a-fA-F]{64}$/u);
   });
 });
 
 describe('onRpcRequest - decryptMessage', () => {
-  it('should decrypt a message intended for the snaps public key', async () => {
+  it('should decrypt a message intended for the default public key', async () => {
     const snap = await installSnap();
     const pkResponse = await snap.request({
       method: 'getEncryptionPublicKey',
@@ -161,7 +157,7 @@ describe('onRpcRequest - decryptMessage', () => {
     expect(response).toRespondWithError({
       code: -32602,
       message:
-        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
       stack: expect.any(String),
     });
   });
@@ -181,7 +177,7 @@ describe('onRpcRequest - decryptMessage', () => {
     expect(response).toRespondWithError({
       code: -32602,
       message:
-        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
       stack: expect.any(String),
     });
   });
@@ -202,7 +198,7 @@ describe('onRpcRequest - decryptMessage', () => {
     expect(response).toRespondWithError({
       code: -32602,
       message:
-        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
       stack: expect.any(String),
     });
   });
@@ -222,7 +218,7 @@ describe('onRpcRequest - decryptMessage', () => {
     expect(response).toRespondWithError({
       code: -32602,
       message:
-        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
       stack: expect.any(String),
     });
   });
@@ -243,7 +239,7 @@ describe('onRpcRequest - decryptMessage', () => {
     expect(response).toRespondWithError({
       code: -32602,
       message:
-        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
       stack: expect.any(String),
     });
   });
@@ -263,7 +259,7 @@ describe('onRpcRequest - decryptMessage', () => {
     expect(response).toRespondWithError({
       code: -32602,
       message:
-        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
       stack: expect.any(String),
     });
   });
@@ -284,7 +280,7 @@ describe('onRpcRequest - decryptMessage', () => {
     expect(response).toRespondWithError({
       code: -32602,
       message:
-        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
       stack: expect.any(String),
     });
   });

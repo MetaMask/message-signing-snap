@@ -14,6 +14,10 @@ const GetPublicEntropyKeyParamsSchema = z.object({
   entropySourceId: z.string().optional(),
 });
 
+const GetEncryptionPublicKeyParamsSchema = z.object({
+  entropySourceId: z.string().optional(),
+});
+
 const SignMessageParamsSchema = z.object({
   message: z.string().startsWith('metamask:'),
   entropySourceId: z.string().optional(),
@@ -26,6 +30,7 @@ const DecryptMessageParamsSchema = z.object({
     ephemPublicKey: z.string().length(44).base64(), // 32 bytes, base64 encoded
     ciphertext: z.string().base64(),
   }),
+  entropySourceId: z.string().optional(),
 });
 
 /**
@@ -77,7 +82,25 @@ function assertDecryptMessageParams(
   } catch (error: any) {
     throw rpcErrors.invalidParams({
       message:
-        '`decryptMessage`, must take a `data` parameter that must match the Eip1024EncryptedData schema',
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
+    });
+  }
+}
+
+/**
+ * Asserts the shape of the `decryptMessage` request matches the expected {data: Eip1024EncryptedData}.
+ * @param params - The input params to assert.
+ * @returns {never} Returns nothing, but will throw error if params don't match what is required.
+ */
+function assertGetEncryptionPublicKeyParams(
+  params: unknown,
+): asserts params is z.infer<typeof GetEncryptionPublicKeyParamsSchema> {
+  try {
+    GetEncryptionPublicKeyParamsSchema.parse(params);
+  } catch (error: any) {
+    throw rpcErrors.invalidParams({
+      message:
+        '`getEncryptionPublicKey`, expects an optional `entropySourceId` parameter',
     });
   }
 }
@@ -137,13 +160,19 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       return await signMessageWithEntropyKey(message, entropySourceId, salt);
     }
     case 'getEncryptionPublicKey': {
-      return getEncryptionPublicKey();
+      const { params } = request;
+      if (!params) {
+        return getEncryptionPublicKey(undefined);
+      }
+      assertGetEncryptionPublicKeyParams(params);
+      const { entropySourceId } = params;
+      return getEncryptionPublicKey(entropySourceId);
     }
     case 'decryptMessage': {
       const { params } = request;
       assertDecryptMessageParams(params);
-      const { data } = params;
-      return await decryptMessage(data);
+      const { data, entropySourceId } = params;
+      return await decryptMessage(data, entropySourceId);
     }
     default:
       throw rpcErrors.methodNotFound({

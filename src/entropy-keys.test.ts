@@ -31,7 +31,7 @@ describe('getPublicEntropyKey() tests', () => {
   it('should return a public key from a known private key with a source ID', async () => {
     mockSnapGetEntropy();
 
-    const address = await getPublicEntropyKey('mockEntropySourceId');
+    const address = await getPublicEntropyKey('mock_id_2');
     expect(address).toBe(MOCK_PUBLIC_KEY_SRP2);
   });
 });
@@ -58,10 +58,7 @@ describe('signMessageWithEntropyKey() tests', () => {
     mockSnapGetEntropy();
 
     const message = 'hello world';
-    const signature = await signMessageWithEntropyKey(
-      message,
-      'mockEntropySourceId',
-    );
+    const signature = await signMessageWithEntropyKey(message, 'mock_id_2');
     const EXPECTED_SIGNATURE =
       '0xc7cd8af7ddd59287eee7e99f111e637d3e16add417edab1efd388e2688db77dd6e36f1189e47600eeab49c750d4247c5300dbdfbf1d1fad2b6a970070e5148c7';
     expect(signature).toBe(EXPECTED_SIGNATURE);
@@ -77,39 +74,17 @@ describe('signMessageWithEntropyKey() tests', () => {
 
 describe('getAllPublicEntropyKeys() tests', () => {
   it('should get entropy source IDs and SRP IDs relationship map', async () => {
-    const mockEntropySources = [
-      { name: 'source1', id: 'id1', type: 'mnemonic', primary: true },
-      { name: 'source2', id: 'id2', type: 'mnemonic', primary: false },
-    ] as ListEntropySourcesResult;
-
-    const mockSnapRequest = jest
-      .fn()
-      .mockImplementation(async (r: { method: string; params: any }) => {
-        if (r.method === 'snap_listEntropySources') {
-          return mockEntropySources;
-        } else if (r.method === 'snap_getEntropy') {
-          if (r.params.source === 'id2') {
-            return MOCK_PRIVATE_KEY_SRP2;
-          }
-          return MOCK_PRIVATE_KEY;
-        }
-
-        throw new Error(`TEST ENV - Snap Request was not mocked: ${r.method}`);
-      });
-
-    (global as any).snap = {
-      request: mockSnapRequest,
-    };
+    mockSnapGetEntropy();
 
     const relationshipMap = await getAllPublicEntropyKeys();
     expect(relationshipMap).toStrictEqual([
-      ['id1', MOCK_PUBLIC_KEY],
-      ['id2', MOCK_PUBLIC_KEY_SRP2],
+      ['mock_id_1', MOCK_PUBLIC_KEY],
+      ['mock_id_2', MOCK_PUBLIC_KEY_SRP2],
     ]);
   });
 });
 
-describe('getEncryptionPublicKey() tests', () => {
+describe('encryption tests', () => {
   it('gets the expected encryption key', async () => {
     mockSnapGetEntropy();
 
@@ -132,17 +107,69 @@ describe('getEncryptionPublicKey() tests', () => {
     const decrypted = await decryptMessage(encrypted);
     expect(decrypted).toBe('hello world');
   });
+
+  it('fails tp decrypt a message intended for someone else', async () => {
+    mockSnapGetEntropy();
+
+    const encrypted = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'some/ONE/else/SHOULD/read/this/COSJY',
+    };
+
+    await expect(decryptMessage(encrypted)).rejects.toThrow(/invalid tag/u);
+  });
+
+  it('decrypts a message intended for a specific public encryption key', async () => {
+    mockSnapGetEntropy();
+
+    const encrypted = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+
+    const decrypted = await decryptMessage(encrypted, 'mock_id_1');
+    expect(decrypted).toBe('hello world');
+  });
+
+  it('fails to decrypt a message with the wrong version', async () => {
+    mockSnapGetEntropy();
+
+    const encrypted = {
+      version: 'x25519-something-else-entirely',
+      nonce: 'dontcare',
+      ephemPublicKey: 'dontcare',
+      ciphertext: 'dontcare',
+    };
+
+    await expect(decryptMessage(encrypted)).rejects.toThrow(
+      /Encryption type\/version not supported \(x25519-something-else-entirely\)./u,
+    );
+  });
 });
 
 function mockSnapGetEntropy() {
+  const mockEntropySources = [
+    { name: 'source1', id: 'mock_id_1', type: 'mnemonic', primary: true },
+    { name: 'source2', id: 'mock_id_2', type: 'mnemonic', primary: false },
+  ] as ListEntropySourcesResult;
+
   const mockSnapRequest = jest
     .fn()
     .mockImplementation(async (r: { method: string; params: any }) => {
-      if (r.method === 'snap_getEntropy') {
-        if (r.params.source === 'mockEntropySourceId') {
-          return MOCK_PRIVATE_KEY_SRP2;
+      if (r.method === 'snap_listEntropySources') {
+        return mockEntropySources;
+      } else if (r.method === 'snap_getEntropy') {
+        switch (r.params.source) {
+          case 'mock_id_2':
+            return MOCK_PRIVATE_KEY_SRP2;
+          case 'mock_id_1':
+          default:
+            return MOCK_PRIVATE_KEY;
         }
-        return MOCK_PRIVATE_KEY;
       }
 
       throw new Error(`TEST ENV - Snap Request was not mocked: ${r.method}`);

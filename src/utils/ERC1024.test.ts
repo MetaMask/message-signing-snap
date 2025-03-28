@@ -85,15 +85,18 @@ describe('errors:', () => {
     ).toThrow('string expected');
   });
 
-  it('rejects unknown version', () => {
-    const receiverSecret = base64ToBytes(
-      'CyTDtSMUSxJ8wQ5Ht7fvko2frSuEEE9Srs5hZ/IODQ4=',
-    );
+  it('rejects unknown version for encryption', () => {
+    expect(() =>
+      ERC1024.encrypt(new Uint8Array(), 'dontcare', 'bad version'),
+    ).toThrow('Encryption type/version not supported bad version');
+  });
+
+  it('rejects unknown version for decryption', () => {
     const encrypted = {
-      version: 'unsupported version',
+      version: 'bad version',
     };
-    expect(() => ERC1024.decrypt(encrypted as any, receiverSecret)).toThrow(
-      'Encryption type/version not supported (unsupported version).',
+    expect(() => ERC1024.decrypt(encrypted as any, new Uint8Array())).toThrow(
+      'Encryption type/version not supported (bad version).',
     );
   });
 
@@ -105,7 +108,7 @@ describe('errors:', () => {
       version: 'x25519-xsalsa20-poly1305',
       nonce: 'EzjiHlL/0A7lViaG2OR1loa4Vu55vjKP',
       ephemPublicKey: 'EkLpuBHg/hY72uCVOzFFxM4ku2RRhjwn2rNtQETtMiI=',
-      ciphertext: 'corruptedhhQJf20Wk9uQbe60x1XpZIwYeMU',
+      ciphertext: 'corrupted++QJf20Wk9uQbe60x1XpZIwYeMU',
     };
     expect(() => ERC1024.decrypt(encrypted as any, receiverSecret)).toThrow(
       'invalid tag',
@@ -133,7 +136,7 @@ describe('errors:', () => {
     );
     const encrypted = {
       version: 'x25519-xsalsa20-poly1305',
-      nonce: 'WRONGlL/0A7lViaG2OR1loa4Vu55vjKP',
+      nonce: 'WRONG///0A7lViaG2OR1loa4Vu55vjKP',
       ephemPublicKey: 'EkLpuBHg/hY72uCVOzFFxM4ku2RRhjwn2rNtQETtMiI=',
       ciphertext: 'SOLw4OmDAhhQJf20Wk9uQbe60x1XpZIwYeMU',
     };
@@ -148,14 +151,30 @@ describe('errors:', () => {
     );
     const encrypted = {
       version: 'x25519-xsalsa20-poly1305',
-      nonce: 'WRONGGGG',
+      nonce: 'WRONG+length',
       ephemPublicKey: 'EkLpuBHg/hY72uCVOzFFxM4ku2RRhjwn2rNtQETtMiI=',
       ciphertext: 'SOLw4OmDAhhQJf20Wk9uQbe60x1XpZIwYeMU',
     };
     expect(() => ERC1024.decrypt(encrypted as any, receiverSecret)).toThrow(
-      'Uint8Array expected of length 24, not of length=6',
+      'Uint8Array expected of length 24, not of length=9',
     );
   });
+
+  it('fails decryption with wrong nonce encoding', () => {
+    const receiverSecret = base64ToBytes(
+      'CyTDtSMUSxJ8wQ5Ht7fvko2frSuEEE9Srs5hZ/IODQ4=',
+    );
+    const encrypted = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: '0x WRONG encoding',
+      ephemPublicKey: 'EkLpuBHg/hY72uCVOzFFxM4ku2RRhjwn2rNtQETtMiI=',
+      ciphertext: 'SOLw4OmDAhhQJf20Wk9uQbe60x1XpZIwYeMU',
+    };
+    expect(() => ERC1024.decrypt(encrypted as any, receiverSecret)).toThrow(
+      'padding: invalid, string should have whole number of bytes',
+    );
+  });
+
   it('fails decryption with missing nonce', () => {
     const receiverSecret = base64ToBytes(
       'CyTDtSMUSxJ8wQ5Ht7fvko2frSuEEE9Srs5hZ/IODQ4=',
@@ -169,6 +188,7 @@ describe('errors:', () => {
       'Value must be a string.',
     );
   });
+
   it('fails decryption with corrupted ephemKey', () => {
     const receiverSecret = base64ToBytes(
       'CyTDtSMUSxJ8wQ5Ht7fvko2frSuEEE9Srs5hZ/IODQ4=',
@@ -176,24 +196,37 @@ describe('errors:', () => {
     const encrypted = {
       version: 'x25519-xsalsa20-poly1305',
       nonce: 'EzjiHlL/0A7lViaG2OR1loa4Vu55vjKP',
-      ephemPublicKey: 'corruptedhY72uCVOzFFxM4ku2RRhjwn2rNtQETtMiI=',
+      ephemPublicKey: 'corrupted++72uCVOzFFxM4ku2RRhjwn2rNtQETtMiI=',
       ciphertext: 'SOLw4OmDAhhQJf20Wk9uQbe60x1XpZIwYeMU',
     };
     expect(() => ERC1024.decrypt(encrypted as any, receiverSecret)).toThrow(
       'invalid tag',
     );
   });
+
+  it('fails decryption with bad private key encoding', () => {
+    expect(() =>
+      ERC1024.decrypt(
+        { version: 'x25519-xsalsa20-poly1305' } as any,
+        '0x bad encoding',
+      ),
+    ).toThrow('Bad private key');
+  });
+
   it('fails decryption with missing ephemKey', () => {
-    const receiverSecret = base64ToBytes(
-      'CyTDtSMUSxJ8wQ5Ht7fvko2frSuEEE9Srs5hZ/IODQ4=',
-    );
     const encrypted = {
       version: 'x25519-xsalsa20-poly1305',
       nonce: 'EzjiHlL/0A7lViaG2OR1loa4Vu55vjKP',
       ciphertext: 'SOLw4OmDAhhQJf20Wk9uQbe60x1XpZIwYeMU',
     };
-    expect(() => ERC1024.decrypt(encrypted as any, receiverSecret)).toThrow(
+    expect(() => ERC1024.decrypt(encrypted as any, new Uint8Array())).toThrow(
       'Value must be a string.',
+    );
+  });
+
+  it('fails encryption with bad public key encoding', () => {
+    expect(() => ERC1024.encrypt('bad encoding' as any, 'nothing')).toThrow(
+      'Bad public key',
     );
   });
 });

@@ -73,7 +73,7 @@ const decrypt = (
       const ciphertext = base64ToBytes(encryptedData.ciphertext);
       const ephemPublicKey = base64ToBytes(encryptedData.ephemPublicKey);
 
-      // decrypt
+      // decrypt or throw 'invalid tag' error
       const decryptedMessage = nacl.box.open(
         ciphertext,
         nonce,
@@ -82,9 +82,6 @@ const decrypt = (
       );
 
       // return decrypted msg data
-      if (!decryptedMessage) {
-        throw new Error('Decryption failed');
-      }
       return bytesToUtf8(decryptedMessage);
     }
     default:

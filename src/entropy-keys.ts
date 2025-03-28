@@ -99,11 +99,17 @@ const KEY_PURPOSE_ENCRYPTION = 'metamask:snaps:encryption';
 
 /**
  * Retrieve the secret encryption key for this snap.
+ * @param entropySourceId - Optional entropy Source ID following SIP-30.
  * @returns Encryption Secret Key Bytes.
  * @see https://metamask.github.io/SIPs/SIPS/sip-6 for more information about how the derivation works.
  */
-async function getEncryptionSecretKey(): Promise<Uint8Array> {
-  const privateEntropy = await getEntropy(undefined, KEY_PURPOSE_ENCRYPTION);
+async function getEncryptionSecretKey(
+  entropySourceId?: EntropySourceId,
+): Promise<Uint8Array> {
+  const privateEntropy = await getEntropy(
+    entropySourceId,
+    KEY_PURPOSE_ENCRYPTION,
+  );
   return sha256(
     concatBytes([privateEntropy, utf8ToBytes(KEY_PURPOSE_ENCRYPTION)]),
   );
@@ -111,23 +117,53 @@ async function getEncryptionSecretKey(): Promise<Uint8Array> {
 
 /**
  * Retrieve the public encryption key for this snap.
+ * @param entropySourceId - Optional entropy Source ID following SIP-30.
  * @returns Public Key Hex.
  */
-export async function getEncryptionPublicKey(): Promise<Hex> {
-  const secretKeyBytes = await getEncryptionSecretKey();
+export async function getEncryptionPublicKey(
+  entropySourceId?: EntropySourceId,
+): Promise<Hex> {
+  const secretKeyBytes = await getEncryptionSecretKey(entropySourceId);
   return bytesToHex(x25519.getPublicKey(secretKeyBytes));
 }
 
 /**
+ * Error message for decrypting with the wrong private key.
+ * This is thrown by @noble/ciphers, so we will need to match.
+ */
+const INVALID_TAG_ERROR = 'invalid tag';
+
+/**
  * Decrypt an encrypted message using the snap specific encryption key.
+ * In case there are multiple possible private keys, the entropy source ID can be used to specify which one to use.
+ * For privacy reasons, it may be impossible to know which entropy source ID to use, so all entropy sources will be tried if this parameter is missing.
  * @param encryptedMessage - The encrypted message, encoded as a `Eip1024EncryptedData` object.
+ * @param entropySourceId - Optional entropy Source ID following SIP-30. If this is missing, all available entropy sources will be tried.
  * @returns The decrypted message (string).
  */
 export async function decryptMessage(
   encryptedMessage: Eip1024EncryptedData,
+  entropySourceId?: EntropySourceId,
 ): Promise<string> {
-  const secretKeyBytes = await getEncryptionSecretKey();
-  return ERC1024.decrypt(encryptedMessage, secretKeyBytes);
+  if (entropySourceId) {
+    const secretKeyBytes = await getEncryptionSecretKey(entropySourceId);
+    return ERC1024.decrypt(encryptedMessage, secretKeyBytes);
+  }
+  const entropySources = await listEntropySources();
+  let decryptionError = null;
+  for (const source of entropySources) {
+    const secretKeyBytes = await getEncryptionSecretKey(source.id);
+    try {
+      return ERC1024.decrypt(encryptedMessage, secretKeyBytes);
+    } catch (error: any) {
+      if (error.message !== INVALID_TAG_ERROR) {
+        // If decryption fails because of the key, try the next entropy source.
+        // Otherwise, it's likely we matched the correct key so remember the error.
+        decryptionError = decryptionError ?? error;
+      }
+    }
+  }
+  throw decryptionError ?? new Error(INVALID_TAG_ERROR);
 }
 
 /**

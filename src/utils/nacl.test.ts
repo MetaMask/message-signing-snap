@@ -1540,7 +1540,7 @@ const naclBoxRandomVectors = [
     'j8CPGGJJ+KTWTeD1nWZ/nIDwz4uJu4tuGdmh1bHrWwPEwP8No8+WsNaLpeJ1OTotHiS8GkkH4R65F89H1wEFO2Z1iVPscxYHLE0UkLPqpADrNtxl3Y7GD+ORgJyd4wfOSpGTGnN1d6Zliv1Y6Mvv1knSkX3Fu3k4i+uZNpQ3BlGyFucogo86Zz2bQUXHnrVfyLal3pR9RDAMX5DNhd4aVEZV3wMTZmSfr9DCAgNkNMJprEJXrbkiD8DAluUWJtSiQQ4/zHtYsFcQ6vUjgk2zPcRIJMzhdCudpbaPKHvtGPHWF81plG+Et7JG0fwu64o4agggrm4dXIu05kxQASj9',
     '3WDkh/jJSq5yScxWu798jxaVizcDAHS423STZ9vtiIR8ctO9lfSAe284y5WMtVCSxYs7fgLTC9Rvm4ineq0QuDFjuPdGqlTK3LT3nKnBpOCzsNH8FGDwTirhn3qUl+5m9h4t+VHzXeDhn2DlWOxXKeWz7plq84715XbawLeVBcp2s8nslxxpxvfBFbXKoRIQUcyLgKRwQrVvz2FOgyue0An6Njff0uGErWcwuLdAsB6I4yqvJD1uCpWrTbaMCuxgc1P3MM56t1hSQSSzkr98aYvxZ+0qeC0cp5tqA4MLtyaoXw4i+D1oHQ+IWHsChsKcJMQY9oMRSIBbRGUsA/m6x63BWULjLkqEygsjNoyUbQ==',
   ],
-];
+] as const;
 
 const enc = (a: Uint8Array) => Buffer.from(a).toString('base64');
 const dec = (a: string) => u8(Buffer.from(a, 'base64'));
@@ -1560,4 +1560,51 @@ describe('nacl.box', () => {
       expect(enc(openedBox)).toStrictEqual(enc(msgBytes));
     },
   );
+
+  it('fails to open a box with a bad secret key length', () => {
+    const nonce = new Uint8Array(nacl.box.nonceLength);
+    const pk1 = dec(naclBoxRandomVectors[0][0]);
+    const sk2 = dec(naclBoxRandomVectors[0][1]);
+    const msgBytes = dec(naclBoxRandomVectors[0][2]);
+    const box = nacl.box.seal(msgBytes, nonce, pk1, sk2);
+    expect(() => nacl.box.open(box, nonce, pk1, new Uint8Array(0))).toThrow(
+      /secretKey must be 32 bytes long/u,
+    );
+  });
+
+  it('fails to open a box with a bad secret key', () => {
+    const nonce = new Uint8Array(nacl.box.nonceLength);
+    const pk1 = dec(naclBoxRandomVectors[0][0]);
+    const sk2 = dec(naclBoxRandomVectors[0][1]);
+    const msgBytes = dec(naclBoxRandomVectors[0][2]);
+    const box = nacl.box.seal(msgBytes, nonce, pk1, sk2);
+    expect(() => nacl.box.open(box, nonce, pk1, new Uint8Array(32))).toThrow(
+      /invalid tag/u,
+    );
+  });
+
+  it('fails to open a box with a bad public key length', () => {
+    const nonce = new Uint8Array(nacl.box.nonceLength);
+    const pk1 = dec(naclBoxRandomVectors[0][0]);
+    const sk2 = dec(naclBoxRandomVectors[0][1]);
+    const msgBytes = dec(naclBoxRandomVectors[0][2]);
+    const box = nacl.box.seal(msgBytes, nonce, pk1, sk2);
+    expect(() => nacl.box.open(box, nonce, new Uint8Array(0), sk2)).toThrow(
+      /publicKey must be 32 bytes long/u,
+    );
+  });
+
+  it('fails to seal a box with a public key type', () => {
+    const nothing = new Uint8Array(0);
+    expect(() =>
+      nacl.box.seal(nothing, nothing, 'whatever' as any, nothing),
+    ).toThrow(/publicKey must be a Uint8Array/u);
+  });
+
+  it('fails to seal a box with a secret key type', () => {
+    const nothing = new Uint8Array(0);
+    expect(() =>
+      nacl.box.seal(nothing, nothing, nothing, 'whatever' as any),
+    ).toThrow(/secretKey must be a Uint8Array/u);
+  });
 });
