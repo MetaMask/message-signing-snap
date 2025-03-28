@@ -14,6 +14,8 @@ const MOCK_PRIVATE_KEY =
   '0xec180de430cef919666c2009b91ca3d3b7f6c471136abc9937fa40b89357bbb9';
 const MOCK_PUBLIC_KEY =
   '0x02c291ee55d10abcc46de22b775cb0782b06f386ced8b0d0fccb8007a686bbddad';
+const MOCK_ENCRYPTION_PUBLIC_KEY =
+  '0xcd1f3cd0cf8cdc6437b36224968c56b661b9c3765fc0f49dd75051c341705b07';
 
 const MOCK_PRIVATE_KEY_SRP2 =
   '0x1111111130cef919666c2009b91ca3d3b7f6c471136abc9937fa40b811111111';
@@ -87,11 +89,8 @@ describe('getAllPublicEntropyKeys() tests', () => {
 describe('encryption tests', () => {
   it('gets the expected encryption key', async () => {
     mockSnapGetEntropy();
-
     const publicEncryptionKey = await getEncryptionPublicKey();
-    const EXPECTED_KEY =
-      '0x50cbcf3915730e501b7476e92157307f6e9aade2a2798cf3832f73cd4990281b';
-    expect(publicEncryptionKey).toBe(EXPECTED_KEY);
+    expect(publicEncryptionKey).toBe(MOCK_ENCRYPTION_PUBLIC_KEY);
   });
 
   it('decrypts a message intended for this public encryption key', async () => {
@@ -99,9 +98,9 @@ describe('encryption tests', () => {
 
     const encrypted = {
       version: 'x25519-xsalsa20-poly1305',
-      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
-      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
-      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+      nonce: '8jFlr2cYdkyBIookw6akE8lA0f+odanN',
+      ephemPublicKey: 'UOPWFRaPdY6kKDEoM/ovCBCT2p4PSx6MMdOgNzA2gC0=',
+      ciphertext: '2UNvHmxnmOHtI9vhf7gfeD/J7Q/q6vqjEQqY',
     };
 
     const decrypted = await decryptMessage(encrypted);
@@ -126,9 +125,9 @@ describe('encryption tests', () => {
 
     const encrypted = {
       version: 'x25519-xsalsa20-poly1305',
-      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
-      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
-      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+      nonce: '8jFlr2cYdkyBIookw6akE8lA0f+odanN',
+      ephemPublicKey: 'UOPWFRaPdY6kKDEoM/ovCBCT2p4PSx6MMdOgNzA2gC0=',
+      ciphertext: '2UNvHmxnmOHtI9vhf7gfeD/J7Q/q6vqjEQqY',
     };
 
     const decrypted = await decryptMessage(encrypted, 'mock_id_1');

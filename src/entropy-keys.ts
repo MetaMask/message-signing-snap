@@ -1,7 +1,6 @@
 import type { ListEntropySourcesResult } from '@metamask/snaps-sdk';
-import type { Eip1024EncryptedData, Hex } from '@metamask/utils';
-import { bytesToHex, concatBytes } from '@metamask/utils';
-import { utf8ToBytes } from '@noble/ciphers/utils';
+import type { Eip1024EncryptedData } from '@metamask/utils';
+import { bytesToHex } from '@metamask/utils';
 import { x25519 } from '@noble/curves/ed25519';
 import { secp256k1 } from '@noble/curves/secp256k1';
 import { sha256 } from '@noble/hashes/sha256';
@@ -100,31 +99,32 @@ const KEY_PURPOSE_ENCRYPTION = 'metamask:snaps:encryption';
 /**
  * Retrieve the secret encryption key for this snap.
  * @param entropySourceId - Optional entropy Source ID following SIP-30.
+ * @param extraSalt - The extraSalt used to obtain a domain specific entropy. Metamask internal origins should use `undefined`.
  * @returns Encryption Secret Key Bytes.
  * @see https://metamask.github.io/SIPs/SIPS/sip-6 for more information about how the derivation works.
  */
 async function getEncryptionSecretKey(
   entropySourceId?: EntropySourceId,
-): Promise<Uint8Array> {
-  const privateEntropy = await getEntropy(
-    entropySourceId,
-    KEY_PURPOSE_ENCRYPTION,
-  );
-  return sha256(
-    concatBytes([privateEntropy, utf8ToBytes(KEY_PURPOSE_ENCRYPTION)]),
-  );
+  extraSalt?: string,
+): Promise<`0x${string}`> {
+  const salt = extraSalt
+    ? `${KEY_PURPOSE_ENCRYPTION}${extraSalt}`
+    : KEY_PURPOSE_ENCRYPTION;
+  return await getEntropy(entropySourceId, salt);
 }
 
 /**
  * Retrieve the public encryption key for this snap.
  * @param entropySourceId - Optional entropy Source ID following SIP-30.
+ * @param salt - The salt used to obtain a domain specific entropy. Metamask internal origins should use `undefined`.
  * @returns Public Key Hex.
  */
 export async function getEncryptionPublicKey(
   entropySourceId?: EntropySourceId,
-): Promise<Hex> {
-  const secretKeyBytes = await getEncryptionSecretKey(entropySourceId);
-  return bytesToHex(x25519.getPublicKey(secretKeyBytes));
+  salt?: string,
+): Promise<`0x${string}`> {
+  const secretKeyHex = await getEncryptionSecretKey(entropySourceId, salt);
+  return bytesToHex(x25519.getPublicKey(secretKeyHex.slice(2)));
 }
 
 /**
@@ -139,22 +139,24 @@ const INVALID_TAG_ERROR = 'invalid tag';
  * For privacy reasons, it may be impossible to know which entropy source ID to use, so all entropy sources will be tried if this parameter is missing.
  * @param encryptedMessage - The encrypted message, encoded as a `Eip1024EncryptedData` object.
  * @param entropySourceId - Optional entropy Source ID following SIP-30. If this is missing, all available entropy sources will be tried.
+ * @param salt - The salt used to obtain a domain specific entropy. Metamask internal origins should use `undefined`.
  * @returns The decrypted message (string).
  */
 export async function decryptMessage(
   encryptedMessage: Eip1024EncryptedData,
   entropySourceId?: EntropySourceId,
+  salt?: string,
 ): Promise<string> {
   if (entropySourceId) {
-    const secretKeyBytes = await getEncryptionSecretKey(entropySourceId);
-    return ERC1024.decrypt(encryptedMessage, secretKeyBytes);
+    const secretKeyHex = await getEncryptionSecretKey(entropySourceId, salt);
+    return ERC1024.decrypt(encryptedMessage, secretKeyHex);
   }
   const entropySources = await listEntropySources();
   let decryptionError = null;
   for (const source of entropySources) {
-    const secretKeyBytes = await getEncryptionSecretKey(source.id);
+    const secretKeyHex = await getEncryptionSecretKey(source.id, salt);
     try {
-      return ERC1024.decrypt(encryptedMessage, secretKeyBytes);
+      return ERC1024.decrypt(encryptedMessage, secretKeyHex);
     } catch (error: any) {
       if (error.message !== INVALID_TAG_ERROR) {
         // If decryption fails because of the key, try the next entropy source.

@@ -162,17 +162,17 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     case 'getEncryptionPublicKey': {
       const { params } = request;
       if (!params) {
-        return getEncryptionPublicKey(undefined);
+        return getEncryptionPublicKey(undefined, salt);
       }
       assertGetEncryptionPublicKeyParams(params);
       const { entropySourceId } = params;
-      return getEncryptionPublicKey(entropySourceId);
+      return getEncryptionPublicKey(entropySourceId, salt);
     }
     case 'decryptMessage': {
       const { params } = request;
       assertDecryptMessageParams(params);
       const { data, entropySourceId } = params;
-      return await decryptMessage(data, entropySourceId);
+      return await decryptMessage(data, entropySourceId, salt);
     }
     default:
       throw rpcErrors.methodNotFound({
