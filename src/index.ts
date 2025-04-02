@@ -3,7 +3,9 @@ import type { OnRpcRequestHandler } from '@metamask/snaps-sdk';
 import { z } from 'zod';
 
 import {
+  decryptMessage,
   getAllPublicEntropyKeys,
+  getEncryptionPublicKey,
   getPublicEntropyKey,
   signMessageWithEntropyKey,
 } from './entropy-keys';
@@ -12,8 +14,22 @@ const GetPublicEntropyKeyParamsSchema = z.object({
   entropySourceId: z.string().optional(),
 });
 
+const GetEncryptionPublicKeyParamsSchema = z.object({
+  entropySourceId: z.string().optional(),
+});
+
 const SignMessageParamsSchema = z.object({
   message: z.string().startsWith('metamask:'),
+  entropySourceId: z.string().optional(),
+});
+
+const DecryptMessageParamsSchema = z.object({
+  data: z.object({
+    version: z.literal('x25519-xsalsa20-poly1305'),
+    nonce: z.string().length(32).base64(), // 24 bytes, base64 encoded
+    ephemPublicKey: z.string().length(44).base64(), // 32 bytes, base64 encoded
+    ciphertext: z.string().base64(),
+  }),
   entropySourceId: z.string().optional(),
 });
 
@@ -49,6 +65,42 @@ function assertGetPublicKeyParams(
     throw rpcErrors.invalidParams({
       message:
         '`getPublicKey`, must take an optional `entropySourceId` parameter',
+    });
+  }
+}
+
+/**
+ * Asserts the shape of the `decryptMessage` request matches the expected {data: Eip1024EncryptedData}.
+ * @param params - The input params to assert.
+ * @returns {never} Returns nothing, but will throw error if params don't match what is required.
+ */
+function assertDecryptMessageParams(
+  params: unknown,
+): asserts params is z.infer<typeof DecryptMessageParamsSchema> {
+  try {
+    DecryptMessageParamsSchema.parse(params);
+  } catch (error: any) {
+    throw rpcErrors.invalidParams({
+      message:
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
+    });
+  }
+}
+
+/**
+ * Asserts the shape of the `decryptMessage` request matches the expected {data: Eip1024EncryptedData}.
+ * @param params - The input params to assert.
+ * @returns {never} Returns nothing, but will throw error if params don't match what is required.
+ */
+function assertGetEncryptionPublicKeyParams(
+  params: unknown,
+): asserts params is z.infer<typeof GetEncryptionPublicKeyParamsSchema> {
+  try {
+    GetEncryptionPublicKeyParamsSchema.parse(params);
+  } catch (error: any) {
+    throw rpcErrors.invalidParams({
+      message:
+        '`getEncryptionPublicKey`, expects an optional `entropySourceId` parameter',
     });
   }
 }
@@ -106,6 +158,21 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       assertSignMessageParams(params);
       const { message, entropySourceId } = params;
       return await signMessageWithEntropyKey(message, entropySourceId, salt);
+    }
+    case 'getEncryptionPublicKey': {
+      const { params } = request;
+      if (!params) {
+        return getEncryptionPublicKey(undefined, salt);
+      }
+      assertGetEncryptionPublicKeyParams(params);
+      const { entropySourceId } = params;
+      return getEncryptionPublicKey(entropySourceId, salt);
+    }
+    case 'decryptMessage': {
+      const { params } = request;
+      assertDecryptMessageParams(params);
+      const { data, entropySourceId } = params;
+      return await decryptMessage(data, entropySourceId, salt);
     }
     default:
       throw rpcErrors.methodNotFound({

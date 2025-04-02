@@ -1,17 +1,18 @@
 import { installSnap } from '@metamask/snaps-jest';
+import type { Hex } from '@metamask/utils';
 import { hexToBytes } from '@noble/ciphers/utils';
 import { secp256k1 } from '@noble/curves/secp256k1';
 import { sha256 } from '@noble/hashes/sha256';
 
 import { INTERNAL_ORIGINS } from '.';
 import type { EntropySourceIdSrpIdMap } from './types';
+import { ERC1024 } from './utils/ERC1024';
 
 describe('onRpcRequest - getPublicKey', () => {
   it('should return this snaps public key', async () => {
     const snap = await installSnap();
     const response = await snap.request({
       method: 'getPublicKey',
-      params: {},
     });
 
     // We cant really test/mock the returned private key, so we can only test the "knowns" features of the public key
@@ -28,7 +29,6 @@ describe('onRpcRequest - getPublicKey', () => {
       INTERNAL_ORIGINS.map(async (origin) => {
         return snap.request({
           method: 'getPublicKey',
-          params: {},
           origin,
         });
       }),
@@ -50,7 +50,6 @@ describe('onRpcRequest - getPublicKey', () => {
       differentOrigins.map(async (origin) => {
         return snap.request({
           method: 'getPublicKey',
-          params: {},
           origin,
         });
       }),
@@ -85,6 +84,295 @@ describe('onRpcRequest - getAllPublicKeys', () => {
     expect((result as EntropySourceIdSrpIdMap).length).toBeGreaterThanOrEqual(
       1,
     );
+  });
+});
+
+describe('onRpcRequest - getEncryptionPublicKey', () => {
+  it('returns this snaps encryption public key', async () => {
+    const snap = await installSnap();
+    const response = await snap.request({
+      method: 'getEncryptionPublicKey',
+    });
+
+    // E.g. length = 66 chars
+    // E.g. starts with '0x'
+    const result = 'result' in response.response && response.response.result;
+    expect(result?.toString()).toMatch(/^0x[0-9a-fA-F]{64}$/u);
+  });
+
+  it('returns the same encryption public key for internal domains', async () => {
+    const snap = await installSnap();
+    const resultsByOrigin = await Promise.all(
+      // NOTE!! we can't test for `undefined` origin, as the snapSimulator will default it to `https://metamask.io`
+      INTERNAL_ORIGINS.map(async (origin) => {
+        return snap.request({
+          method: 'getEncryptionPublicKey',
+          origin,
+        });
+      }),
+    );
+    const publicKeys = resultsByOrigin.map(
+      (result) =>
+        'result' in result.response && result.response.result?.toString(),
+    );
+    expect(publicKeys).toHaveLength(INTERNAL_ORIGINS.length);
+    expect(new Set(publicKeys).size).toBe(1);
+    expect(typeof publicKeys[0]).toBe('string');
+    expect(publicKeys[0]).toMatch(/^0x[0-9a-fA-F]{64}$/u);
+  });
+
+  it('returns different encryption public keys for different domains', async () => {
+    const snap = await installSnap();
+    const differentOrigins = ['origin 1', 'origin 2', ''];
+    const resultsByOrigin = await Promise.all(
+      differentOrigins.map(async (origin) => {
+        return snap.request({
+          method: 'getEncryptionPublicKey',
+          origin,
+        });
+      }),
+    );
+    const publicKeys = resultsByOrigin.map(
+      (result) =>
+        'result' in result.response && result.response.result?.toString(),
+    );
+    expect(publicKeys).toHaveLength(differentOrigins.length);
+    expect(new Set(publicKeys).size).toBe(differentOrigins.length);
+    publicKeys.forEach((entry) => {
+      expect(entry).toBeDefined();
+      expect(typeof entry).toBe('string');
+      expect(entry).toMatch(/^0x[0-9a-fA-F]{64}$/u);
+    });
+  });
+});
+
+describe('onRpcRequest - decryptMessage', () => {
+  it('decrypts a message intended for the default public key', async () => {
+    const snap = await installSnap();
+    const pkResponse = await snap.request({
+      method: 'getEncryptionPublicKey',
+    });
+    const publicKey = (
+      'result' in pkResponse.response && pkResponse.response.result
+    )?.toString() as Hex;
+    const message = 'hello world';
+    const encryptedMessage = ERC1024.encrypt(publicKey, message);
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    const result = 'result' in response.response && response.response.result;
+    expect(result?.toString()).toBe('hello world');
+  });
+
+  it('decrypts a message intended for the default public key of a specific origin', async () => {
+    const snap = await installSnap();
+    const pkResponse = await snap.request({
+      method: 'getEncryptionPublicKey',
+      origin: 'https://example.com',
+    });
+    const publicKey = (
+      'result' in pkResponse.response && pkResponse.response.result
+    )?.toString() as Hex;
+    const message = 'hello world';
+    const encryptedMessage = ERC1024.encrypt(publicKey, message);
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+      origin: 'https://example.com',
+    });
+
+    const result = 'result' in response.response && response.response.result;
+    expect(result?.toString()).toBe('hello world');
+  });
+
+  it(`fails to decrypt a message intended for a different origin`, async () => {
+    const snap = await installSnap();
+    const pkResponse = await snap.request({
+      method: 'getEncryptionPublicKey',
+      origin: 'good origin',
+    });
+    const publicKey = (
+      'result' in pkResponse.response && pkResponse.response.result
+    )?.toString() as Hex;
+    const message = 'hello world';
+    const encryptedMessage = ERC1024.encrypt(publicKey, message);
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+      origin: 'evil origin',
+    });
+
+    expect(response).toRespondWithError({
+      code: -32603,
+      message: 'invalid tag',
+      stack: expect.any(String),
+    });
+  });
+
+  it('fails to decrypt a message intended for a different recipient', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32603,
+      message: 'invalid tag',
+      stack: expect.any(String),
+    });
+  });
+
+  it('rejects a message with invalid version', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      version: '1', // invalid version
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
+      stack: expect.any(String),
+    });
+  });
+
+  it('rejects a message with missing version', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
+      stack: expect.any(String),
+    });
+  });
+
+  it('rejects a message with invalid nonce', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: 'tooshort',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
+      stack: expect.any(String),
+    });
+  });
+
+  it('rejects a message with missing nonce', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      version: 'x25519-xsalsa20-poly1305',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
+      stack: expect.any(String),
+    });
+  });
+
+  it('rejects a message with invalid ephemPublicKey', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ephemPublicKey: 'invalid base 64',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
+      stack: expect.any(String),
+    });
+  });
+
+  it('rejects a message with missing ephemPublicKey', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = {
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    };
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
+      stack: expect.any(String),
+    });
+  });
+
+  it('rejects a message with invalid params type', async () => {
+    const snap = await installSnap();
+    const encryptedMessage = JSON.stringify({
+      version: 'x25519-xsalsa20-poly1305',
+      nonce: 'h63LvxvCOBP3x3Oou2n5JYgCM1p4p+DF',
+      ephemPublicKey: 'lmIBlLKUuSBIRjlo+/hL7ngWYpMWQ7biqk7Y6pDsaXY=',
+      ciphertext: 'g+TpY8OlU0AS9VPvaTIIqpFnWNKvWw2COSJY',
+    });
+    const response = await snap.request({
+      method: 'decryptMessage',
+      params: { data: encryptedMessage },
+    });
+
+    expect(response).toRespondWithError({
+      code: -32602,
+      message:
+        '`decryptMessage`, expects a `data` parameter that must match the Eip1024EncryptedData schema, and an optional entropySourceId string parameter',
+      stack: expect.any(String),
+    });
   });
 });
 
