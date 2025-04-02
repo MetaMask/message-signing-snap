@@ -9,10 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.0]
 
-### Uncategorized
+### Added
 
 - feat: add encryption capabilities ([#102](https://github.com/MetaMask/message-signing-snap/pull/102))
-- chore(ci): remove unnecessary steps and jobs from GH workflows ([#124](https://github.com/MetaMask/message-signing-snap/pull/124))
 
 ## [1.0.0]
 
