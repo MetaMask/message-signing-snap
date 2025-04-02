@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0]
+
+### Uncategorized
+
+- feat: add encryption capabilities ([#102](https://github.com/MetaMask/message-signing-snap/pull/102))
+- chore(ci): remove unnecessary steps and jobs from GH workflows ([#124](https://github.com/MetaMask/message-signing-snap/pull/124))
+
 ## [1.0.0]
 
 ### Changed
@@ -85,7 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/MetaMask/message-signing-snap/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.7.0...v1.0.0
 [0.7.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/MetaMask/message-signing-snap/compare/v0.5.0...v0.6.0
