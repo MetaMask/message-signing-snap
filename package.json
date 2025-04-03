@@ -1,6 +1,6 @@
 {
   "name": "@metamask/message-signing-snap",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Provide automatic message signing (no user interaction) using a pseudo randomly generated private key",
   "homepage": "https://github.com/MetaMask/message-signing-snap#readme",
   "bugs": {
