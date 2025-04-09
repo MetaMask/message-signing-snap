@@ -114,7 +114,7 @@ export const INTERNAL_ORIGINS = [
   'https://portfolio-builds.metafi-dev.codefi.network',
   'https://docs.metamask.io',
   'https://developer.metamask.io',
-  '', // calls coming from the extension or mobile app will have an empty origin
+  'metamask', // calls coming from the extension or mobile app will have a preset origin.
 ];
 
 /**
