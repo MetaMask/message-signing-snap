@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.1]
 
-### Uncategorized
+### Fixed
 
 - fix: MetaMask internal calls now specify `metamask` as origin ([#126](https://github.com/MetaMask/message-signing-snap/pull/126))
 

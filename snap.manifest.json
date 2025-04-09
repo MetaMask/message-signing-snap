@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Provides public key and message signing used for signing in with MetaMask",
   "proposedName": "Sign in with MetaMask",
   "repository": {
@@ -7,7 +7,7 @@
     "url": "https://github.com/MetaMask/message-signing-snap.git"
   },
   "source": {
-    "shasum": "p6KXWrEaGnxHAO2WrQXTckCYSUyo553Wg2P4O4X9ez0=",
+    "shasum": "9PUmW+e2a0zBmUPTSifCG+ixfDtLdQx7DK8k0gPHFEg=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
