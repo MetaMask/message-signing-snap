@@ -7,7 +7,7 @@
     "url": "https://github.com/MetaMask/message-signing-snap.git"
   },
   "source": {
-    "shasum": "9PUmW+e2a0zBmUPTSifCG+ixfDtLdQx7DK8k0gPHFEg=",
+    "shasum": "+eN4x8N9pWaBqBtmoHRZLnSSLq8mW9nhBWR2B6rE4lw=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -21,13 +21,14 @@
     "https://portfolio.metamask.io": {},
     "https://portfolio-builds.metafi-dev.codefi.network": {},
     "https://docs.metamask.io": {},
-    "https://developer.metamask.io": {}
+    "https://developer.metamask.io": {},
+    "npm:@metamask/gator-permissions-snap": {}
   },
   "initialPermissions": {
     "snap_getEntropy": {},
     "endowment:rpc": {
       "dapps": true,
-      "snaps": false
+      "snaps": true
     }
   },
   "platformVersion": "6.19.0",
