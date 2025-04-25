@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.2]
 
-### Uncategorized
+### Fixed
 
-- fix: Update endowment:rpc to allow a snaps and add gator snap to initialConnections ([#128](https://github.com/MetaMask/message-signing-snap/pull/128))
+- fix: Update endowment:rpc to allow snaps and add gator snap to initialConnections ([#128](https://github.com/MetaMask/message-signing-snap/pull/128))
 
 ## [1.1.1]
 
