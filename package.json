@@ -103,7 +103,8 @@
       "@lavamoat/preinstall-always-fail": false,
       "@metamask/snaps-jest>@metamask/snaps-controllers>@metamask/phishing-controller>@metamask/controller-utils>ethereumjs-util>ethereum-cryptography>keccak": false,
       "@metamask/snaps-jest>@metamask/snaps-controllers>@metamask/phishing-controller>@metamask/controller-utils>ethereumjs-util>ethereum-cryptography>secp256k1": false,
-      "ts-node>@swc/core": false
+      "ts-node>@swc/core": false,
+      "jest>@jest/core>jest-resolve>unrs-resolver": false
     }
   }
 }
