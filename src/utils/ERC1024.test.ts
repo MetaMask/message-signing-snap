@@ -156,7 +156,7 @@ describe('errors:', () => {
       ciphertext: 'SOLw4OmDAhhQJf20Wk9uQbe60x1XpZIwYeMU',
     };
     expect(() => ERC1024.decrypt(encrypted as any, receiverSecret)).toThrow(
-      'Uint8Array expected of length 24, not of length=9',
+      'Uint8Array expected of length 24, got length=9',
     );
   });
 

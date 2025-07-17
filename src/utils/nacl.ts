@@ -1,6 +1,6 @@
-import { randomBytes } from '@noble/ciphers/crypto';
 import { hsalsa, secretbox } from '@noble/ciphers/salsa';
 import { u32, u8 } from '@noble/ciphers/utils';
+import { randomBytes } from '@noble/ciphers/webcrypto';
 import { x25519 } from '@noble/curves/ed25519';
 
 const PUBLIC_KEY_BYTES = 32;
