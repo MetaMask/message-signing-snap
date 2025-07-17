@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3]
+
+### Uncategorized
+
+- chore: update dependencies ([#131](https://github.com/MetaMask/message-signing-snap/pull/131))
+- chore: Update CODEOWNERS to identity ([#130](https://github.com/MetaMask/message-signing-snap/pull/130))
+
 ## [1.1.2]
 
 ### Fixed
@@ -103,7 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.3...HEAD
+[1.1.3]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/MetaMask/message-signing-snap/compare/v1.0.0...v1.1.0
