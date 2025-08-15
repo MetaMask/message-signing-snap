@@ -19,6 +19,7 @@
   },
   "initialConnections": {
     "https://portfolio.metamask.io": {},
+    "https://app.metamask.io": {},
     "https://portfolio-builds.metafi-dev.codefi.network": {},
     "https://docs.metamask.io": {},
     "https://developer.metamask.io": {},
