@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.4]
 
-### Uncategorized
+### Changed
 
 - Chore/add new portfolio domain app metamask io ([#134](https://github.com/MetaMask/message-signing-snap/pull/134))
 
