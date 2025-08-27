@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.4]
+
+### Uncategorized
+
+- Chore/add new portfolio domain app metamask io ([#134](https://github.com/MetaMask/message-signing-snap/pull/134))
+
 ## [1.1.3]
 
 ### Changed
@@ -109,7 +115,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.4...HEAD
+[1.1.4]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.0...v1.1.1
