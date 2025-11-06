@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.5]
 
-### Uncategorized
+### Changed
 
 - chore: update typescript version ([#136](https://github.com/MetaMask/message-signing-snap/pull/136))
 
