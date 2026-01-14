@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.5]
+
+### Changed
+
+- chore: update typescript version ([#136](https://github.com/MetaMask/message-signing-snap/pull/136))
+
 ## [1.1.4]
 
 ### Changed
@@ -115,7 +121,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON-RPC docs & README.
 - Update Snap Icon ([#1](https://github.com/MetaMask/message-signing-snap/pull/1))
 
-[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.4...HEAD
+[Unreleased]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.5...HEAD
+[1.1.5]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/MetaMask/message-signing-snap/compare/v1.1.1...v1.1.2
